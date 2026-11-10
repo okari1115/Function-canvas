@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover" />
-<title>Function Canvas — 関数設計マップ</title>
+<title>Function Canvas v4.2 — 関数設計マップ</title>
 <link rel="manifest" href="./manifest.webmanifest" />
 <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
 <meta name="description" content="42課題の関数設計と依存関係を管理するワークスペース" />
@@ -121,6 +121,46 @@ body.is-home .app{display:none!important}
 @media(max-width:900px){.language-chooser select{min-width:68px}.header-actions{gap:4px}.toolbar .btn{padding:7px 9px}}
 @media(max-width:680px){.v4-dialog-head{padding:12px}.v4-dialog-scroll{padding:10px}.v4-dialog-actions{padding:10px}.legend-strip{margin:4px 8px 0;font-size:9px}.source-code-scroll{font-size:11px}}
 
+
+/* v4.1: reliable touch gestures and discoverable connection deletion */
+.canvas-wrap{touch-action:none;overscroll-behavior:contain}
+.edge-hit,.edge-grip,.node-port{touch-action:none}
+.edge-group.selected .edge-hit{stroke-width:34}
+.edge-grip{r:10}
+#quickDeleteEdge[hidden]{display:none!important}
+.edge-list-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 8px;border-bottom:1px solid #e0e8f2}
+.edge-list-row .edge-route{font-weight:700;font-size:13px;overflow-wrap:anywhere}
+.edge-list-row .edge-description{font-size:11px;color:#687e96;margin-top:4px}
+.edge-list-row .edge-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.edge-list-row .edge-actions button{min-height:36px}
+#edgeListOverlay .v4-dialog{width:min(740px,100%)}
+@media(max-width:680px){.edge-list-row{align-items:flex-start}.edge-list-row .edge-actions{flex-direction:column}.edge-list-row .edge-actions button{font-size:11px}}
+
+
+/* v4.2: display-only nested helper functions, source graph is never discarded */
+.node{transition:box-shadow .15s;}
+.node.has-fold{border-color:#7ca7e8;box-shadow:0 6px 22px #20456a18}
+.fold-strip{padding:5px 11px 8px;border-top:1px solid #e4ebf4;background:#f5f9ff}
+.fold-toggle{background:#e7f0ff;border:1px solid #c5d8f9;border-radius:8px;display:flex;align-items:center;gap:6px;width:100%;font-size:11px;font-weight:800;color:#27548e;min-height:30px;padding:5px 8px;touch-action:manipulation;justify-content:space-between}
+.fold-toggle:hover{background:#dbeafe}
+.fold-list{margin-top:7px;max-height:260px;overflow-y:auto;overscroll-behavior:contain;background:#fff;border:1px solid #d8e5f3;border-radius:9px;padding:4px;touch-action:pan-y}
+.fold-row{display:flex;align-items:center;gap:3px;min-height:35px;border-bottom:1px solid #eef2f8;padding-right:3px}
+.fold-row:last-child{border-bottom:none}
+.fold-row.selected-fold{background:#e9f3ff;border-radius:5px}
+.fold-child-link{display:block;flex:1;min-width:0;border:0;background:transparent;text-align:left;padding:6px 2px;font-size:10px;line-height:1.35;color:#234166;font-weight:750;overflow-wrap:anywhere;touch-action:manipulation}
+.fold-child-link small{display:block;font-size:9px;font-weight:500;color:#7c8fa6;margin-top:2px}
+.fold-subtoggle{border:1px solid #c8d8ec;border-radius:6px;background:#f5f8fd;color:#456a92;min-width:28px;height:29px;padding:0;font-size:13px;touch-action:manipulation}
+.fold-child-link:focus-visible,.fold-toggle:focus-visible,.fold-subtoggle:focus-visible{outline:2px solid #3673e0}
+.fold-editor{background:#f3f7ff;border:1px solid #d6e4fb;border-radius:11px;padding:12px;margin:5px 0 15px}
+.fold-editor-title{font-size:12px;font-weight:800;margin-bottom:8px;color:#315b93}
+.fold-editor p{font-size:11px;color:#657e99;line-height:1.6;margin:6px 0}
+.fold-editor .field{margin:9px 0}
+.fold-editor select{font-size:13px}
+.fold-static-pill{font-size:10px;color:#3171ba;background:#e7f2ff;border-radius:5px;padding:2px 5px}
+.edge-count-label{fill:#fff;font-size:12px;font-weight:bold;text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.edge-count-bubble{fill:#316bd3;stroke:#fff;stroke-width:2;pointer-events:none}
+.fold-legend{color:#3163a1}
+@media(max-width:680px){.fold-strip{padding:4px 7px}.fold-list{max-height:240px}.fold-toggle{min-height:34px}.fold-editor{padding:9px}}
 </style>
 </head>
 <body>
@@ -149,6 +189,13 @@ body.is-home .app{display:none!important}
 </div>
 
 
+<section class="analysis-overlay" id="edgeListOverlay" hidden>
+ <div class="v4-dialog" role="dialog" aria-modal="true" aria-labelledby="edgeListTitle">
+  <div class="v4-dialog-head"><div><h2 id="edgeListTitle">接続一覧・矢印の削除</h2><p>接続元・接続先を確認して、不要な矢印を削除できます。</p></div><button class="btn" id="closeEdgeList">✕ 閉じる</button></div>
+  <div class="v4-dialog-scroll" id="edgeListBody"></div>
+  <div class="v4-dialog-actions"><button class="btn" id="closeEdgeListBottom">閉じる</button></div>
+ </div>
+</section>
 <section class="analysis-overlay" id="sourceImportOverlay" hidden>
   <div class="v4-dialog" role="dialog" aria-modal="true" aria-labelledby="importTitle">
     <div class="v4-dialog-head"><div><span class="eyebrow">SOURCE IMPORT</span><h2 id="importTitle">ソース解析の確認</h2></div><button class="btn" id="cancelSourceImport">✕ 閉じる</button></div>
@@ -169,14 +216,14 @@ body.is-home .app{display:none!important}
   </div>
 </section>
 
-<div class="app"><main class="main"><div class="toolbar"><div class="toolbar-group"><button class="btn primary" id="addBtn">＋ 新しい関数</button><button class="btn" id="connectBtn">↗ 接続する</button><button class="btn" id="sourceImportBtn">⇧ ソース / ZIP</button><input id="sourceFileInput" class="file-input" type="file" multiple accept=".c,.h,.py,.zip,application/zip"/><button class="btn" id="layoutBtn">▦ 自動整列</button><button class="btn" id="analysisBtn">◎ 依存関係の分析</button><button class="btn" id="unresolvedBtn">? 未解決 <span id="unresolvedCount">0</span></button></div>
+<div class="app"><main class="main"><div class="toolbar"><div class="toolbar-group"><button class="btn primary" id="addBtn">＋ 新しい関数</button><button class="btn" id="connectBtn">↗ 接続する</button><button class="btn" id="edgeListBtn">↗ 接続一覧・削除</button><button class="btn danger" id="quickDeleteEdge" hidden>選択した矢印を削除</button><button class="btn" id="sourceImportBtn">⇧ ソース / ZIP</button><input id="sourceFileInput" class="file-input" type="file" multiple accept=".c,.h,.py,.zip,application/zip"/><button class="btn" id="layoutBtn">▦ 自動整列</button><button class="btn" id="collapseAllBtn">▸ 全部たたむ</button><button class="btn" id="expandAllBtn">▾ 全部開く</button><button class="btn" id="analysisBtn">◎ 依存関係の分析</button><button class="btn" id="unresolvedBtn">? 未解決 <span id="unresolvedCount">0</span></button></div>
 <div class="searchbox"><label class="sr-only" for="nodeSearch">関数を検索</label><input id="nodeSearch" autocomplete="off" placeholder="⌕ 関数を検索（名前・責務・契約）" /><button id="clearSearch" class="search-clear" aria-label="検索を消す">×</button><div class="search-results" id="searchResults" hidden></div></div><div class="toolbar-group"><span class="help-pill" id="zoomLabel">100%</span><button class="btn small" id="zoomOut" aria-label="縮小">－</button><button class="btn small" id="zoomIn" aria-label="拡大">＋</button><button class="btn small" id="fitBtn">全体表示</button></div></div><div class="mobile-controls" id="mobileControls">
 <label>編集する関数<select id="mobileNodeSelect"><option value="">関数を選択</option></select></label>
 <label>接続元<select id="mobileFrom"><option value="">接続元を選択</option></select></label>
 <label>接続先<select id="mobileTo"><option value="">接続先を選択</option></select></label>
 <label>関係<select id="mobileKind"><option value="call">関数呼び出し →</option><option value="state">状態更新・依存 ⇢</option></select></label>
 <button class="btn primary" id="mobileConnect">接続を追加</button>
-</div><div class="canvas-wrap" id="canvas"><div class="legend-strip"><span class="key-auto"></span>自動検出 <span class="key-manual"></span>手動接続 <span class="key-state"></span>状態依存</div><div class="canvas-hint" id="hint">ノードをドラッグして移動 ・ 選択すると右側で編集できます</div><div class="world-shell" id="shell"><div class="world" id="world"><svg class="edges" id="edges" viewBox="0 0 2600 1900"><defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 L9 4.5 L0 9 Z" fill="#8798ac"/></marker><marker id="arrowState" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 L9 4.5 L0 9 Z" fill="#8559c5"/></marker></defs><g id="edgeLayer"></g></svg><div id="nodeLayer"></div></div></div></div></main><aside class="inspector"><div class="inspector-head"><div><h2 id="inspectorTitle">関数設計メモ</h2><p id="inspectorSubtitle">ノードを選ぶと詳細を編集できます</p></div><span style="font-size:22px;color:#a0afc2">☷</span></div><div class="inspector-body" id="inspectorBody"></div></aside></div><div class="status" id="toast" role="status"></div>
+</div><div class="canvas-wrap" id="canvas"><div class="legend-strip"><span class="key-auto"></span>自動検出 <span class="key-manual"></span>手動接続 <span class="key-state"></span>状態依存 <span class="fold-legend">▸ static補助関数は親に収納</span></div><div class="canvas-hint" id="hint">ノードをドラッグして移動 ・ 選択すると右側で編集できます</div><div class="world-shell" id="shell"><div class="world" id="world"><svg class="edges" id="edges" viewBox="0 0 2600 1900"><defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 L9 4.5 L0 9 Z" fill="#8798ac"/></marker><marker id="arrowState" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 L9 4.5 L0 9 Z" fill="#8559c5"/></marker></defs><g id="edgeLayer"></g></svg><div id="nodeLayer"></div></div></div></div></main><aside class="inspector"><div class="inspector-head"><div><h2 id="inspectorTitle">関数設計メモ</h2><p id="inspectorSubtitle">ノードを選ぶと詳細を編集できます</p></div><span style="font-size:22px;color:#a0afc2">☷</span></div><div class="inspector-body" id="inspectorBody"></div></aside></div><div class="status" id="toast" role="status"></div>
 <script src="./jszip.min.js"></script>
 <script src="./parser.js"></script>
 <script>
@@ -217,7 +264,7 @@ function switchProject(projectId){
   if(!projects.some(p=>p.id===projectId))return;
   persist();currentProjectId=projectId;
   const p=projects.find(p=>p.id===projectId);nodes=p.nodes;edges=p.edges;
-  if(!p.language)p.language='c';if(!Array.isArray(p.sources))p.sources=[];$('languageSelect').value=p.language;updateUnresolvedCount();
+  if(!p.language)p.language='c';if(!Array.isArray(p.sources))p.sources=[];migrateStaticMetadata(p);$('languageSelect').value=p.language;updateUnresolvedCount();
   selected=null;selectedEdge=null;connectFrom=null;connectMode=false;drag=null;
   persist();renderProjectSelect();renderAll();hideHome();setTimeout(fit,40);toast('「'+p.name+'」を開きました');
 }
@@ -236,37 +283,188 @@ function load(){
   nodes=projects[0].nodes;edges=projects[0].edges;persist();renderProjectSelect();
 }
 function nodeById(nid){return nodes.find(n=>n.id===nid)}
-function renderNodes(){
- const layer=$('nodeLayer');layer.innerHTML='';
+/* -------- v4.2: nested static helpers (visual grouping only) -------- */
+let foldView={parent:new Map(),children:new Map(),roots:[]};
+function migrateStaticMetadata(project){
+ if(!project||project.language!=='c'||project.staticMetadataVersion===2||!Array.isArray(project.sources)||!project.sources.length)return;
+ try{
+  const result=FCParser.parseSources(project.sources,'c');
+  const types=new Map(result.definitions.map(d=>[d.key,!!d.isStatic]));
+  for(const n of project.nodes||[])if(n.sourceKey&&types.has(n.sourceKey))n.isStatic=types.get(n.sourceKey);
+  project.staticMetadataVersion=2;
+  scheduleSave();
+ }catch(err){console.warn('static metadata migration skipped',err)}
+}
+function refreshFoldView(){
+ const parent=new Map(),byId=new Map(nodes.map(n=>[n.id,n]));
+ const tryAdd=(childId,parentId)=>{
+  if(!byId.has(childId)||!byId.has(parentId)||childId===parentId)return;
+  let cur=parentId;const seen=new Set([childId]);
+  while(cur){if(seen.has(cur))return;seen.add(cur);cur=parent.get(cur)}
+  parent.set(childId,parentId);
+ };
+ // Explicit user choices always override static analysis.
+ for(const n of nodes)if(n.foldMode==='manual'&&n.foldParentId)tryAdd(n.id,n.foldParentId);
  for(const n of nodes){
+  if(n.foldMode==='manual'||n.foldMode==='off')continue;
+  if(!(n.isStatic&&n.sourceLanguage==='c'&&/\.c$/i.test(n.sourceFile||'')&&!n.sourceMissing))continue;
+  const callers=new Set(edges.filter(e=>e.kind!=='state'&&e.to===n.id&&byId.has(e.from)).map(e=>e.from));
+  if(callers.size!==1)continue;
+  const caller=byId.get([...callers][0]);
+  if(caller&&caller.sourceFile===n.sourceFile&&!caller.sourceMissing)tryAdd(n.id,caller.id);
+ }
+ const children=new Map(nodes.map(n=>[n.id,[]]));
+ for(const [child,pid] of parent)children.get(pid).push(child);
+ for(const list of children.values())list.sort((a,b)=>{
+  const na=byId.get(a),nb=byId.get(b);return (na?.sourceLine||0)-(nb?.sourceLine||0)||String(na?.name).localeCompare(String(nb?.name));
+ });
+ foldView={parent,children,roots:nodes.filter(n=>!parent.has(n.id))};
+ return foldView;
+}
+function foldRoot(nid){
+ let cur=nid,guard=0;
+ while(foldView.parent.has(cur)&&guard++<nodes.length)cur=foldView.parent.get(cur);
+ return cur;
+}
+function expandAncestors(nid){
+ refreshFoldView();let p=foldView.parent.get(nid),changed=false,limit=nodes.length;
+ while(p&&limit-->0){const n=nodeById(p);if(n&&!n.foldExpanded){n.foldExpanded=true;changed=true}p=foldView.parent.get(p)}
+ if(changed)scheduleSave();return foldRoot(nid);
+}
+function foldRows(nid,depth=0){
+ let count=0;
+ for(const childId of foldView.children.get(nid)||[]){
+  count++;
+  if(nodeById(childId)?.foldExpanded&&depth<20)count+=foldRows(childId,depth+1);
+ }
+ return count;
+}
+function nodeHeight(n){
+ if(!(foldView.children.get(n.id)||[]).length)return HEIGHT;
+ return HEIGHT+39+(n.foldExpanded?Math.min(266,foldRows(n.id)*38+9):0);
+}
+function preventFoldOverlaps(){
+ refreshFoldView();const visible=[...foldView.roots];let moved=false;
+ for(let pass=0;pass<visible.length;pass++){
+  let changed=false;
+  for(let i=0;i<visible.length;i++)for(let j=i+1;j<visible.length;j++){
+   const a=visible[i],b=visible[j];
+   if(a.x+WIDTH+18<=b.x||b.x+WIDTH+18<=a.x)continue;
+   const upper=a.y<=b.y?a:b,lower=upper===a?b:a;
+   const minY=upper.y+nodeHeight(upper)+34;
+   if(lower.y<minY){lower.y=minY;changed=true;moved=true}
+  }
+  if(!changed)break;
+ }
+ if(moved)scheduleSave();
+}
+function nestedRowsHTML(nid,depth=0){
+ if(depth>20)return '';
+ let out='';
+ for(const cid of foldView.children.get(nid)||[]){
+  const child=nodeById(cid),sub=(foldView.children.get(cid)||[]).length;
+  if(!child)continue;
+  out+=`<div class="fold-row ${selected===cid?'selected-fold':''}" style="padding-left:${Math.min(depth,5)*10}px"><button class="fold-child-link" data-fold-child="${escapeHtml(cid)}" title="設計メモを開く">${escapeHtml(child.name)}${child.isStatic?'<span class="fold-static-pill"> static</span>':''}<small>${escapeHtml(child.sourceFile||'手動グループ')}</small></button>${sub?`<button class="fold-subtoggle" data-fold-toggle="${escapeHtml(cid)}" aria-label="${escapeHtml(child.name)}の内部関数を${child.foldExpanded?'閉じる':'開く'}">${child.foldExpanded?'▾':'▸'} ${sub}</button>`:''}</div>`;
+  if(sub&&child.foldExpanded)out+=nestedRowsHTML(cid,depth+1);
+ }
+ return out;
+}
+function foldHTML(n){
+ const kids=foldView.children.get(n.id)||[];
+ if(!kids.length)return '';
+ return `<section class="fold-strip"><button class="fold-toggle" type="button" data-fold-toggle="${escapeHtml(n.id)}" aria-expanded="${!!n.foldExpanded}"><span>${n.foldExpanded?'▾':'▸'} 内部の補助関数</span><span>${kids.length} 件${n.foldExpanded?' · 開いている':' · 折りたたみ'}</span></button>${n.foldExpanded?`<div class="fold-list">${nestedRowsHTML(n.id)}</div>`:''}</section>`;
+}
+function aggregatedEdges(){
+ const groups=new Map();
+ for(const e of edges){
+  if(!nodeById(e.from)||!nodeById(e.to))continue;
+  const from=foldRoot(e.from),to=foldRoot(e.to);
+  if(from===to)continue; // child-to-parent links remain in the source graph, hidden on canvas
+  const key=[from,to,e.kind||'call'].join('|');
+  if(!groups.has(key))groups.set(key,{from,to,kind:e.kind||'call',links:[]});
+  groups.get(key).links.push(e);
+ }
+ return [...groups.values()];
+}
+function foldEditor(n){
+ const mode=n.foldMode||'auto',actual=foldView.parent.get(n.id);
+ const options=nodes.filter(p=>p.id!==n.id&&foldRoot(p.id)!==n.id).map(p=>`<option value="${escapeHtml(p.id)}" ${n.foldParentId===p.id?'selected':''}>${escapeHtml(p.name)}</option>`).join('');
+ const hint=actual?'現在の親：'+(nodeById(actual)?.name||'?'):'現在は独立表示';
+ return `<section class="fold-editor"><div class="fold-editor-title">▸ 関数の階層化・折りたたみ</div><p>${n.isStatic?'Cのstatic関数として検出しました。':'静的解析ではstatic補助関数と判定されていません。'} ${escapeHtml(hint)}</p><div class="field"><label for="foldModeField">表示方法</label><select id="foldModeField"><option value="auto" ${mode==='auto'?'selected':''}>自動判定（staticの場合）</option><option value="off" ${mode==='off'?'selected':''}>常に独立ノード</option><option value="manual" ${mode==='manual'?'selected':''}>親ノードの内部へ手動配置</option></select></div><div class="field" id="foldParentField" ${mode==='manual'?'':'hidden'}><label for="foldParentFieldSelect">親にする関数</label><select id="foldParentFieldSelect"><option value="">親を選択してください</option>${options}</select></div><p>これは表示上の階層です。Cの関数スコープは変更せず、元の呼び出し線・設計メモは維持します。</p></section>`;
+}
+function bindFoldEditor(n){
+ const mode=$('foldModeField'),parent=$('foldParentFieldSelect');if(!mode)return;
+ mode.onchange=()=>{
+  if(mode.value==='manual'&&!parent.value){n.foldParentId=foldView.parent.get(n.id)||null;}
+  n.foldMode=mode.value;scheduleSave();renderAll();toast('表示方法を更新しました');
+ };
+ if(parent)parent.onchange=()=>{
+  if(!parent.value)return;
+  refreshFoldView();let p=parent.value,limit=nodes.length;
+  while(p&&limit-->0){if(p===n.id){toast('自分の子孫を親にはできません');renderInspector();return}p=foldView.parent.get(p)}
+  n.foldParentId=parent.value;n.foldMode='manual';scheduleSave();renderAll();toast('親ノードを変更しました');
+ };
+}
+function renderNodes(){
+ refreshFoldView();
+ const layer=$('nodeLayer');layer.innerHTML='';
+ for(const n of foldView.roots){
    const el=document.createElement('article');
-   el.className='node type-'+(n.type||'control')+(n.generated?' auto-node':'')+(n.sourceMissing?' stale-node':'')+(selected===n.id?' selected':'')+(connectFrom===n.id?' connect-origin':'')+(searchQuery?(matchesNode(n,searchQuery)?' search-hit':' search-dim'):'');
-   el.style.left=n.x+'px';el.style.top=n.y+'px';el.dataset.id=n.id;
-   el.innerHTML='<div class="node-head"><div class="node-name">'+escapeHtml(n.name||'無名関数')+'</div><span class="node-type">'+({control:'制御 / 解析',output:'出力 / 変換',state:'状態管理'}[n.type]||'制御 / 解析')+'</span></div><div class="node-body"><div class="node-resp">'+escapeHtml(n.responsibility||'責務を入力してください')+'</div><div class="node-input">入力：'+escapeHtml(n.input||'未設定')+'</div></div>';
+   const hasFold=(foldView.children.get(n.id)||[]).length>0;
+   el.className='node type-'+(n.type||'control')+(hasFold?' has-fold':'')+(n.generated?' auto-node':'')+(n.sourceMissing?' stale-node':'')+(selected===n.id?' selected':'')+(connectFrom===n.id?' connect-origin':'')+(searchQuery?(matchesNode(n,searchQuery)||hasMatchingDescendant(n.id,searchQuery)?' search-hit':' search-dim'):'');
+   el.style.left=n.x+'px';el.style.top=n.y+'px';el.style.height=nodeHeight(n)+'px';el.dataset.id=n.id;
+   el.innerHTML='<div class="node-head"><div class="node-name">'+escapeHtml(n.name||'無名関数')+(n.isStatic?' <span class="fold-static-pill">static</span>':'')+'</div><span class="node-type">'+({control:'制御 / 解析',output:'出力 / 変換',state:'状態管理'}[n.type]||'制御 / 解析')+'</span></div><div class="node-body"><div class="node-resp">'+escapeHtml(n.responsibility||'責務を入力してください')+'</div><div class="node-input">入力：'+escapeHtml(n.input||'未設定')+'</div></div>'+foldHTML(n);
    const port=document.createElement('button');port.className='node-port';port.title='ここから接続先へドラッグ';port.type='button';port.textContent='→';port.setAttribute('aria-label',n.name+'から接続線をドラッグ');
-   port.addEventListener('pointerdown',e=>{if(e.button!==0)return;e.preventDefault();e.stopPropagation();startEdgeDrag(e,{type:'new',from:n.id})});
+   port.addEventListener('pointerdown',e=>{if(e.button!==0)return;if(e.pointerType==='touch'&&touchPointers.size>1)return;e.preventDefault();e.stopPropagation();startEdgeDrag(e,{type:'new',from:n.id})});
    port.addEventListener('click',e=>{e.stopPropagation();e.preventDefault()});
-   el.appendChild(port);el.addEventListener('pointerdown',e=>pointerDown(e,n.id,el));layer.appendChild(el);
+   el.appendChild(port);
+   const nested=el.querySelector('.fold-strip');
+   if(nested){
+     nested.addEventListener('pointerdown',e=>e.stopPropagation());
+     nested.addEventListener('click',e=>{
+       const toggle=e.target.closest('[data-fold-toggle]');
+       const child=e.target.closest('[data-fold-child]');
+       if(toggle){e.stopPropagation();const node=nodeById(toggle.dataset.foldToggle);if(node){node.foldExpanded=!node.foldExpanded;preventFoldOverlaps();scheduleSave();renderAll();toast(node.foldExpanded?'内部関数を展開しました':'内部関数を折りたたみました')}return}
+       if(child){e.stopPropagation();focusNode(child.dataset.foldChild)}
+     });
+   }
+   el.addEventListener('pointerdown',e=>pointerDown(e,n.id,el));layer.appendChild(el);
  }
 }
-function pathFor(a,b){let sx,sy,tx,ty;if(b.y>a.y+25){sx=a.x+WIDTH/2;sy=a.y+HEIGHT;tx=b.x+WIDTH/2;ty=b.y;let d=Math.max(45,Math.abs(ty-sy)*.46);return `M ${sx} ${sy} C ${sx} ${sy+d}, ${tx} ${ty-d}, ${tx} ${ty}`;}if(b.y+HEIGHT<a.y-25){sx=a.x+WIDTH/2;sy=a.y;tx=b.x+WIDTH/2;ty=b.y+HEIGHT;let d=Math.max(45,Math.abs(ty-sy)*.46);return `M ${sx} ${sy} C ${sx} ${sy-d}, ${tx} ${ty+d}, ${tx} ${ty}`;}const right=b.x>a.x;sx=a.x+(right?WIDTH:0);sy=a.y+HEIGHT/2;tx=b.x+(right?0:WIDTH);ty=b.y+HEIGHT/2;const d=Math.max(40,Math.abs(tx-sx)*.5);return `M ${sx} ${sy} C ${sx+(right?d:-d)} ${sy}, ${tx+(right?-d:d)} ${ty}, ${tx} ${ty}`;}
+function hasMatchingDescendant(nid,q){
+ const queue=[...(foldView.children.get(nid)||[])],visited=new Set();
+ while(queue.length){const next=queue.shift();if(visited.has(next))continue;visited.add(next);const n=nodeById(next);if(n&&matchesNode(n,q))return true;queue.push(...(foldView.children.get(next)||[]))}
+ return false;
+}
+function pathFor(a,b){
+ let sx,sy,tx,ty;const ah=nodeHeight(a),bh=nodeHeight(b);
+ if(b.y>a.y+25){sx=a.x+WIDTH/2;sy=a.y+ah;tx=b.x+WIDTH/2;ty=b.y;let d=Math.max(45,Math.abs(ty-sy)*.46);return `M ${sx} ${sy} C ${sx} ${sy+d}, ${tx} ${ty-d}, ${tx} ${ty}`;}
+ if(b.y+bh<a.y-25){sx=a.x+WIDTH/2;sy=a.y;tx=b.x+WIDTH/2;ty=b.y+bh;let d=Math.max(45,Math.abs(ty-sy)*.46);return `M ${sx} ${sy} C ${sx} ${sy-d}, ${tx} ${ty+d}, ${tx} ${ty}`;}
+ const right=b.x>a.x;sx=a.x+(right?WIDTH:0);sy=a.y+Math.min(HEIGHT,ah)/2;tx=b.x+(right?0:WIDTH);ty=b.y+Math.min(HEIGHT,bh)/2;
+ const d=Math.max(40,Math.abs(tx-sx)*.5);return `M ${sx} ${sy} C ${sx+(right?d:-d)} ${sy}, ${tx+(right?-d:d)} ${ty}, ${tx} ${ty}`;
+}
 function renderEdges(){
- const layer=$('edgeLayer');layer.innerHTML='';
- for(const e of edges){
-   const a=nodeById(e.from),b=nodeById(e.to);if(!a||!b)continue;
+ refreshFoldView();const layer=$('edgeLayer');layer.innerHTML='';
+ for(const group of aggregatedEdges()){
+   const a=nodeById(group.from),b=nodeById(group.to);if(!a||!b)continue;
+   const e=group.links[0],isSelected=group.links.some(x=>x.id===selectedEdge),isAuto=group.links.every(x=>x.origin==='auto');
    const g=document.createElementNS('http://www.w3.org/2000/svg','g');
-   g.setAttribute('class','edge-group'+(selectedEdge===e.id?' selected':'')+(e.kind==='state'?' kind-state':'')+(e.origin==='auto'?' origin-auto':' origin-manual'));
-   const d=pathFor(a,b),p=document.createElementNS('http://www.w3.org/2000/svg','path');p.setAttribute('d',d);p.setAttribute('class','edge-path');p.setAttribute('marker-end',e.kind==='state'?'url(#arrowState)':'url(#arrow)');
+   g.setAttribute('class','edge-group'+(isSelected?' selected':'')+(group.kind==='state'?' kind-state':'')+(isAuto?' origin-auto':' origin-manual'));
+   const d=pathFor(a,b),p=document.createElementNS('http://www.w3.org/2000/svg','path');p.setAttribute('d',d);p.setAttribute('class','edge-path');p.setAttribute('marker-end',group.kind==='state'?'url(#arrowState)':'url(#arrow)');
    const hit=document.createElementNS('http://www.w3.org/2000/svg','path');hit.setAttribute('d',d);hit.setAttribute('class','edge-hit');g.append(p,hit);
+   const title=document.createElementNS('http://www.w3.org/2000/svg','title');title.textContent=group.links.map(link=>`${nodeById(link.from)?.name||'?'} → ${nodeById(link.to)?.name||'?'} (${link.origin==='auto'?'自動':'手動'})`).join('\n');g.append(title);
    g.addEventListener('click',ev=>{ev.stopPropagation();if(Date.now()<window._fcIgnoreEdgeClickUntil)return;connectMode=false;connectFrom=null;selected=null;selectedEdge=e.id;renderAll()});
-   hit.addEventListener('pointerdown',ev=>{if(ev.button!==0)return;ev.stopPropagation();ev.preventDefault();selectedEdge=e.id;selected=null;renderEdges();startEdgeDrag(ev,{type:'existing',edgeId:e.id,end:'to'})});
-   if(selectedEdge===e.id){
-     const coords=d.match(/-?\d+(?:\.\d+)?/g).map(Number);
+   hit.addEventListener('pointerdown',ev=>{if(ev.button!==0)return;ev.stopPropagation();ev.preventDefault();selectedEdge=e.id;selected=null;startEdgeDrag(ev,{type:'existing',edgeId:e.id,end:'to'});renderInspector();updateDeleteEdgeButton();g.classList.add('selected')});
+   if(group.links.length>1){const coords=d.match(/-?\d+(?:\.\d+)?/g).map(Number),x=(coords[0]+coords[6])/2,y=(coords[1]+coords[7])/2;
+     const bubble=document.createElementNS('http://www.w3.org/2000/svg','circle');bubble.setAttribute('cx',x);bubble.setAttribute('cy',y);bubble.setAttribute('r','12');bubble.setAttribute('class','edge-count-bubble');
+     const text=document.createElementNS('http://www.w3.org/2000/svg','text');text.setAttribute('x',x);text.setAttribute('y',y);text.setAttribute('class','edge-count-label');text.textContent=String(group.links.length);g.append(bubble,text);
+   }
+   if(isSelected){const coords=d.match(/-?\d+(?:\.\d+)?/g).map(Number);
      for(const side of ['from','to']){
        const circle=document.createElementNS('http://www.w3.org/2000/svg','circle');
-       const isH=Math.abs(coords[6]-coords[0])>=Math.abs(coords[7]-coords[1]);const sign=(isH?coords[6]-coords[0]:coords[7]-coords[1])>=0?1:-1;const offset=(side==='from'?15:-15)*sign;circle.setAttribute('cx',(side==='from'?coords[0]:coords[6])+(isH?offset:0));circle.setAttribute('cy',(side==='from'?coords[1]:coords[7])+(isH?0:offset));circle.setAttribute('r','8');circle.setAttribute('class','edge-grip');
-       circle.addEventListener('pointerdown',ev=>{if(ev.button!==0)return;ev.stopPropagation();ev.preventDefault();startEdgeDrag(ev,{type:'existing',edgeId:e.id,end:side})});
-       g.append(circle);
+       const isH=Math.abs(coords[6]-coords[0])>=Math.abs(coords[7]-coords[1]);const sign=(isH?coords[6]-coords[0]:coords[7]-coords[1])>=0?1:-1;const offset=(side==='from'?15:-15)*sign;
+       circle.setAttribute('cx',(side==='from'?coords[0]:coords[6])+(isH?offset:0));circle.setAttribute('cy',(side==='from'?coords[1]:coords[7])+(isH?0:offset));circle.setAttribute('r','8');circle.setAttribute('class','edge-grip');
+       circle.addEventListener('pointerdown',ev=>{if(ev.button!==0)return;ev.stopPropagation();ev.preventDefault();startEdgeDrag(ev,{type:'existing',edgeId:e.id,end:side})});g.append(circle);
      }
    }
    layer.appendChild(g);
@@ -279,19 +477,111 @@ function renderMobile(){
    el.innerHTML=choices;el.value=value;
  }
 }
-function renderAll(){renderEdges();renderNodes();renderInspector();updateToolbar();renderMobile()}
-function updateToolbar(){$('connectBtn').classList.toggle('active',connectMode);$('connectBtn').textContent=connectMode?'× 接続を中止':'↗ 接続する';$('hint').textContent=connectMode?(connectFrom?'接続先の関数をクリックしてください':'接続元の関数をクリックしてください'):'関数をタップするか、上の選択欄から選んで編集できます';$('zoomLabel').textContent=Math.round(zoom*100)+'%'}
+function renderAll(){refreshFoldView();renderEdges();renderNodes();renderInspector();updateToolbar();renderMobile();updateDeleteEdgeButton()}
+function updateToolbar(){$('connectBtn').classList.toggle('active',connectMode);$('connectBtn').textContent=connectMode?'× 接続を中止':'↗ 接続する';$('hint').textContent=connectMode?(connectFrom?'接続先の関数をクリックしてください':'接続元の関数をクリックしてください'):'青い丸から矢印をドラッグ／矢印を選んで削除／二本指でズーム';$('zoomLabel').textContent=Math.round(zoom*100)+'%'}
 function fieldControl(key,label,ph,value){const idd='field-'+key;const multiline=['responsibility','preconditions','contract','dependencies'].includes(key);return `<div class="field"><label for="${idd}">${label}</label>${multiline?`<textarea id="${idd}" data-field="${key}" placeholder="${ph}" rows="2">${escapeHtml(value)}</textarea>`:`<input id="${idd}" data-field="${key}" placeholder="${ph}" value="${escapeHtml(value)}" />`}</div>`}
 function renderInspector(){let body=$('inspectorBody');if(selectedEdge){const e=edges.find(x=>x.id===selectedEdge);if(!e){selectedEdge=null;return renderInspector()}const a=nodeById(e.from),b=nodeById(e.to);$('inspectorTitle').textContent='接続の編集';$('inspectorSubtitle').textContent='関数同士の関係を設定';body.innerHTML=`<div class="field"><label>接続元</label><div class="chip">${escapeHtml(a?.name||'?')}</div></div><div class="field"><label>接続先</label><div class="chip">${escapeHtml(b?.name||'?')}</div></div><div class="field"><label>作成方法</label><div class="chip">${e.origin==='auto'?'ソースから自動生成':'手動で作成'}</div></div><div class="field"><label for="edgeKind">関係の種類</label><select id="edgeKind"><option value="call" ${e.kind!=='state'?'selected':''}>関数呼び出し（実線）</option><option value="state" ${e.kind==='state'?'selected':''}>状態の更新・依存（破線）</option></select></div><button class="btn danger" id="deleteEdge">この接続を削除</button>`;$('edgeKind').onchange=ev=>{e.kind=ev.target.value;scheduleSave();renderEdges()};$('deleteEdge').onclick=()=>{edges=edges.filter(x=>x.id!==e.id);selectedEdge=null;scheduleSave();renderAll();toast('接続を削除しました')};return}
 if(!selected){$('inspectorTitle').textContent='関数設計メモ';$('inspectorSubtitle').textContent='ノードを選んで契約を記入';body.innerHTML='<div class="empty"><span class="em">✎</span>ノードをクリックすると<br>「責務・入力・変更するもの・契約」などを<br>編集できます。<br><br>「＋ 新しい関数」で追加、<br>「接続する」で関数をつなげます。</div><div class="section-title">このアプリでできること</div><div class="connections"><span class="chip">ドラッグ移動</span><span class="chip">ノード編集</span><span class="chip">矢印で接続</span><span class="chip">ソース解析</span><span class="chip">ZIP取り込み</span><span class="chip">JSON保存・読込</span><span class="chip">自動保存</span></div>';return}
-const n=nodeById(selected);if(!n){selected=null;return renderInspector()}$('inspectorTitle').textContent='関数設計メモ';$('inspectorSubtitle').textContent='入力内容は自動保存されます';body.innerHTML=`<div class="field"><label for="typeField">ノードの種類</label><select id="typeField"><option value="control" ${n.type==='control'?'selected':''}>制御・解析（青）</option><option value="output" ${n.type==='output'?'selected':''}>出力・変換（緑）</option><option value="state" ${n.type==='state'?'selected':''}>状態管理（紫）</option></select></div>`+FIELDS.map(([key,label,ph])=>fieldControl(key,label,ph,n[key]||'')).join('')+`<div class="section-title">ノードを移動（タッチ操作向け）</div><div class="inspector-actions"><button class="btn" data-move="left">← 左</button><button class="btn" data-move="up">↑ 上</button><button class="btn" data-move="down">↓ 下</button><button class="btn" data-move="right">右 →</button></div><div class="inspector-actions"><button class="btn" id="duplicateNode">複製</button><button class="btn danger" id="deleteNode">削除</button></div><div class="section-title">接続中の関数</div><div class="connections" id="nodeConnections"></div><div class="footer-note">契約：呼び出し元が信頼できる「成功・失敗時の約束」。内部の処理手順をここに書く必要はありません。</div>`;
-if(n.sourceFile){body.insertAdjacentHTML('beforeend',`<div class="section-title">ソースコード</div><div class="source-meta">${escapeHtml(n.sourceFile)} : ${n.sourceLine||'?'} 行目 ${n.sourceMissing?'（再解析で見つからない定義）':''}</div><button class="btn primary source-open" id="openSourceBtn">⌘ 該当するソースを開く</button><div class="section-title">静的解析の補足</div><div class="v4-muted">${escapeHtml((n.unresolvedCalls||[]).slice(0,12).map(c=>c.target).join('、')||'未解決の呼び出しはありません')}</div>`);}body.querySelectorAll('[data-field]').forEach(el=>el.addEventListener('input',ev=>{n[ev.target.dataset.field]=ev.target.value;scheduleSave();renderNodes()}));$('typeField').onchange=ev=>{n.type=ev.target.value;scheduleSave();renderNodes()};body.querySelectorAll('[data-move]').forEach(b=>b.onclick=()=>{const delta={left:[-55,0],right:[55,0],up:[0,-55],down:[0,55]}[b.dataset.move];n.x=Math.max(0,Math.min(WORLD_W-WIDTH,n.x+delta[0]));n.y=Math.max(0,Math.min(WORLD_H-HEIGHT,n.y+delta[1]));scheduleSave();renderNodes();renderEdges()});$('duplicateNode').onclick=()=>{const copy={...n,id:id(),name:n.name+' copy',x:Math.min(WORLD_W-WIDTH,n.x+40),y:Math.min(WORLD_H-HEIGHT,n.y+185)};nodes.push(copy);selected=copy.id;scheduleSave();renderAll();toast('ノードを複製しました')};$('deleteNode').onclick=()=>{if(!confirm('この関数と関連する接続を削除しますか？'))return;edges=edges.filter(e=>e.from!==n.id&&e.to!==n.id);nodes=nodes.filter(x=>x.id!==n.id);selected=null;scheduleSave();renderAll();toast('ノードを削除しました')};$('openSourceBtn')?.addEventListener('click',()=>openSourceView(n.sourceFile,n.sourceLine,n.sourceEnd));const linked=edges.filter(e=>e.from===n.id||e.to===n.id);$('nodeConnections').innerHTML=linked.length?linked.map(e=>`<span class="chip">${e.from===n.id?'→':'←'} ${escapeHtml(nodeById(e.from===n.id?e.to:e.from)?.name||'')}</span>`).join(''):'<span class="help-pill">まだ接続がありません</span>'}
-function pointerDown(e,nid,el){if(e.button!==0)return;e.stopPropagation();if(connectMode){if(!connectFrom){connectFrom=nid;renderNodes();updateToolbar()}else if(connectFrom!==nid){if(edges.some(x=>x.from===connectFrom&&x.to===nid)){toast('この接続はすでに存在します')}else{edges.push({id:id(),from:connectFrom,to:nid,kind:'call',origin:'manual'});scheduleSave();toast('関数を接続しました')}connectMode=false;connectFrom=null;selected=nid;selectedEdge=null;renderAll()}return}selected=nid;selectedEdge=null;renderAll();const n=nodeById(nid);const startX=e.clientX,startY=e.clientY,ox=n.x,oy=n.y;drag={pointerId:e.pointerId,nid,startX,startY,ox,oy,moved:false};try{$('canvas').setPointerCapture(e.pointerId)}catch(err){}}
+const n=nodeById(selected);if(!n){selected=null;return renderInspector()}$('inspectorTitle').textContent='関数設計メモ';$('inspectorSubtitle').textContent='入力内容は自動保存されます';body.innerHTML=`<div class="field"><label for="typeField">ノードの種類</label><select id="typeField"><option value="control" ${n.type==='control'?'selected':''}>制御・解析（青）</option><option value="output" ${n.type==='output'?'selected':''}>出力・変換（緑）</option><option value="state" ${n.type==='state'?'selected':''}>状態管理（紫）</option></select></div>`+foldEditor(n)+FIELDS.map(([key,label,ph])=>fieldControl(key,label,ph,n[key]||'')).join('')+`<div class="section-title">ノードを移動（タッチ操作向け）</div><div class="inspector-actions"><button class="btn" data-move="left">← 左</button><button class="btn" data-move="up">↑ 上</button><button class="btn" data-move="down">↓ 下</button><button class="btn" data-move="right">右 →</button></div><div class="inspector-actions"><button class="btn" id="duplicateNode">複製</button><button class="btn danger" id="deleteNode">削除</button></div><div class="section-title">接続中の関数</div><div class="connections" id="nodeConnections"></div><div class="footer-note">契約：呼び出し元が信頼できる「成功・失敗時の約束」。内部の処理手順をここに書く必要はありません。</div>`;
+bindFoldEditor(n);
+if(n.sourceFile){body.insertAdjacentHTML('beforeend',`<div class="section-title">ソースコード</div><div class="source-meta">${escapeHtml(n.sourceFile)} : ${n.sourceLine||'?'} 行目 ${n.sourceMissing?'（再解析で見つからない定義）':''}</div><button class="btn primary source-open" id="openSourceBtn">⌘ 該当するソースを開く</button><div class="section-title">静的解析の補足</div><div class="v4-muted">${escapeHtml((n.unresolvedCalls||[]).slice(0,12).map(c=>c.target).join('、')||'未解決の呼び出しはありません')}</div>`);}body.querySelectorAll('[data-field]').forEach(el=>el.addEventListener('input',ev=>{n[ev.target.dataset.field]=ev.target.value;scheduleSave();renderNodes()}));$('typeField').onchange=ev=>{n.type=ev.target.value;scheduleSave();renderNodes()};body.querySelectorAll('[data-move]').forEach(b=>b.onclick=()=>{const delta={left:[-55,0],right:[55,0],up:[0,-55],down:[0,55]}[b.dataset.move];n.x=Math.max(0,Math.min(WORLD_W-WIDTH,n.x+delta[0]));n.y=Math.max(0,Math.min(WORLD_H-HEIGHT,n.y+delta[1]));scheduleSave();renderNodes();renderEdges()});$('duplicateNode').onclick=()=>{const copy={...n,id:id(),name:n.name+' copy',generated:false,isStatic:false,foldMode:'off',foldParentId:null,sourceKey:null,sourceFile:null,x:Math.min(WORLD_W-WIDTH,n.x+40),y:Math.min(WORLD_H-HEIGHT,n.y+185)};nodes.push(copy);selected=copy.id;scheduleSave();renderAll();toast('ノードを複製しました')};$('deleteNode').onclick=()=>{if(!confirm('この関数と関連する接続を削除しますか？'))return;edges=edges.filter(e=>e.from!==n.id&&e.to!==n.id);nodes=nodes.filter(x=>x.id!==n.id);for(const child of nodes)if(child.foldParentId===n.id){child.foldMode='off';child.foldParentId=null}selected=null;scheduleSave();renderAll();toast('ノードを削除しました')};$('openSourceBtn')?.addEventListener('click',()=>openSourceView(n.sourceFile,n.sourceLine,n.sourceEnd));const linked=edges.filter(e=>e.from===n.id||e.to===n.id);$('nodeConnections').innerHTML=linked.length?linked.map(e=>`<span class="chip">${e.from===n.id?'→':'←'} ${escapeHtml(nodeById(e.from===n.id?e.to:e.from)?.name||'')}</span>`).join(''):'<span class="help-pill">まだ接続がありません</span>'}
+/* -------- v4.1: two-finger zoom, one-finger canvas pan -------- */
+const touchPointers=new Map();
+let pinchState=null,touchPan=null;
+function getTouchMidpoint(){
+ const [a,b]=[...touchPointers.values()];
+ return {x:(a.x+b.x)/2,y:(a.y+b.y)/2,dist:Math.hypot(a.x-b.x,a.y-b.y)};
+}
+function stopOngoingDrag(){
+ drag=null;edgeDrag=null;
+ $('dragPreview')?.remove();
+}
+function beginPinch(){
+ if(touchPointers.size<2)return;
+ stopOngoingDrag();connectMode=false;connectFrom=null;touchPan=null;
+ const mid=getTouchMidpoint(),rect=$('canvas').getBoundingClientRect();
+ pinchState={distance:Math.max(1,mid.dist),zoom:zoom,
+  anchor:{x:($('canvas').scrollLeft+mid.x-rect.left)/zoom,y:($('canvas').scrollTop+mid.y-rect.top)/zoom}};
+}
+$('canvas').addEventListener('pointerdown',e=>{
+ if(e.pointerType!=='touch')return;
+ touchPointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+ try{$('canvas').setPointerCapture(e.pointerId)}catch(err){}
+ if(touchPointers.size>=2){beginPinch();return}
+ if(!e.target.closest('.node,.edge-hit,.edge-grip,.node-port')){
+  touchPan={pointerId:e.pointerId,startX:e.clientX,startY:e.clientY,
+   scrollLeft:$('canvas').scrollLeft,scrollTop:$('canvas').scrollTop};
+ }
+},true);
+window.addEventListener('pointermove',e=>{
+ if(e.pointerType!=='touch'||!touchPointers.has(e.pointerId))return;
+ touchPointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+ if(pinchState&&touchPointers.size>=2){
+  e.preventDefault();const mid=getTouchMidpoint();
+  setZoomAt(pinchState.zoom*(mid.dist/pinchState.distance),mid.x,mid.y,pinchState.anchor);
+ }else if(touchPan&&e.pointerId===touchPan.pointerId){
+  e.preventDefault();$('canvas').scrollLeft=touchPan.scrollLeft+touchPan.startX-e.clientX;
+  $('canvas').scrollTop=touchPan.scrollTop+touchPan.startY-e.clientY;
+ }
+},true);
+function finishTouchPointer(e){
+ if(e.pointerType!=='touch'||!touchPointers.has(e.pointerId))return;
+ touchPointers.delete(e.pointerId);
+ if(pinchState){
+  if(touchPointers.size>=2)beginPinch();
+  else {pinchState=null;touchPan=null}
+ }else if(touchPan&&touchPan.pointerId===e.pointerId)touchPan=null;
+}
+window.addEventListener('pointerup',finishTouchPointer,true);
+window.addEventListener('pointercancel',finishTouchPointer,true);
+function pointerDown(e,nid,el){if(e.button!==0)return;if(e.pointerType==='touch'&&touchPointers.size>1)return;e.stopPropagation();if(connectMode){if(!connectFrom){connectFrom=nid;renderNodes();updateToolbar()}else if(connectFrom!==nid){if(edges.some(x=>x.from===connectFrom&&x.to===nid)){toast('この接続はすでに存在します')}else{edges.push({id:id(),from:connectFrom,to:nid,kind:'call',origin:'manual'});scheduleSave();toast('関数を接続しました')}connectMode=false;connectFrom=null;selected=nid;selectedEdge=null;renderAll()}return}selected=nid;selectedEdge=null;renderAll();const n=nodeById(nid);const startX=e.clientX,startY=e.clientY,ox=n.x,oy=n.y;drag={pointerId:e.pointerId,nid,startX,startY,ox,oy,moved:false};try{$('canvas').setPointerCapture(e.pointerId)}catch(err){}}
 window.addEventListener('pointermove',e=>{if(!drag||e.pointerId!==drag.pointerId)return;const n=nodeById(drag.nid);if(!n)return;const dx=(e.clientX-drag.startX)/zoom,dy=(e.clientY-drag.startY)/zoom;if(Math.abs(dx)+Math.abs(dy)>3)drag.moved=true;n.x=Math.max(0,Math.min(WORLD_W-WIDTH,drag.ox+dx));n.y=Math.max(0,Math.min(WORLD_H-HEIGHT,drag.oy+dy));const el=[...document.querySelectorAll('.node')].find(x=>x.dataset.id===n.id);if(el){el.style.left=n.x+'px';el.style.top=n.y+'px'}renderEdges()});window.addEventListener('pointerup',e=>{if(drag&&e.pointerId===drag.pointerId){if(drag.moved)scheduleSave();drag=null}});
-function setZoom(z){const canvas=$('canvas');const focusX=(canvas.scrollLeft+canvas.clientWidth/2)/zoom,focusY=(canvas.scrollTop+canvas.clientHeight/2)/zoom;zoom=Math.max(.45,Math.min(1.6,Math.round(z*100)/100));$('world').style.transform='scale('+zoom+')';$('shell').style.width=(WORLD_W*zoom)+'px';$('shell').style.height=(WORLD_H*zoom)+'px';canvas.scrollLeft=focusX*zoom-canvas.clientWidth/2;canvas.scrollTop=focusY*zoom-canvas.clientHeight/2;updateToolbar()}
-function fit(){if(!nodes.length)return;const canvas=$('canvas');const minX=Math.min(...nodes.map(n=>n.x)),minY=Math.min(...nodes.map(n=>n.y)),maxX=Math.max(...nodes.map(n=>n.x+WIDTH)),maxY=Math.max(...nodes.map(n=>n.y+HEIGHT));const desired=Math.min(1.05,(canvas.clientWidth-100)/(maxX-minX+80),(canvas.clientHeight-80)/(maxY-minY+80));zoom=Math.max(.45,Math.min(1.6,desired));$('world').style.transform=`scale(${zoom})`;$('shell').style.width=(WORLD_W*zoom)+'px';$('shell').style.height=(WORLD_H*zoom)+'px';canvas.scrollLeft=Math.max(0,(minX-45)*zoom);canvas.scrollTop=Math.max(0,(minY-50)*zoom);updateToolbar()}
-function layout(){if(!nodes.length)return;const incoming=new Map(nodes.map(n=>[n.id,0]));for(const e of edges)if(incoming.has(e.to))incoming.set(e.to,incoming.get(e.to)+1);let root=nodes.filter(n=>incoming.get(n.id)===0);if(!root.length)root=[nodes[0]];const levels=new Map(),queue=root.map(n=>[n.id,0]);while(queue.length){const [current,depth]=queue.shift();if(levels.has(current))continue;levels.set(current,depth);for(const e of edges.filter(e=>e.from===current))if(!levels.has(e.to))queue.push([e.to,Math.min(depth+1,7)])}for(const n of nodes)if(!levels.has(n.id))levels.set(n.id,Math.max(0,...levels.values())+1);const groups=new Map();for(const n of nodes){let d=levels.get(n.id);if(!groups.has(d))groups.set(d,[]);groups.get(d).push(n)}for(const [depth,arr] of [...groups].sort((a,b)=>a[0]-b[0])){arr.sort((a,b)=>a.x-b.x);const width=arr.length*WIDTH+(arr.length-1)*70;const start=Math.max(40,(Math.max(1300,width+60)-width)/2);arr.forEach((n,i)=>{n.x=Math.min(WORLD_W-WIDTH,start+i*(WIDTH+70));n.y=60+depth*225})}scheduleSave();renderAll();setTimeout(fit,20);toast('関数の階層に沿って配置しました')}
-$('mobileNodeSelect').onchange=ev=>{selected=ev.target.value||null;selectedEdge=null;connectMode=false;connectFrom=null;renderAll();if(selected){const n=nodeById(selected);const canvas=$('canvas');canvas.scrollLeft=Math.max(0,(n.x-30)*zoom);canvas.scrollTop=Math.max(0,(n.y-35)*zoom);if(window.matchMedia('(max-width:680px)').matches){$('inspectorBody').scrollTop=0}}};
+function setZoomAt(z, clientX, clientY, worldAnchor){
+ const canvas=$('canvas'),rect=canvas.getBoundingClientRect();
+ const dx=clientX-rect.left,dy=clientY-rect.top;
+ const ax=worldAnchor?worldAnchor.x:(canvas.scrollLeft+dx)/zoom;
+ const ay=worldAnchor?worldAnchor.y:(canvas.scrollTop+dy)/zoom;
+ zoom=Math.max(.40,Math.min(2.4,z));
+ $('world').style.transform='scale('+zoom+')';
+ $('shell').style.width=(parseFloat($('world').style.width||WORLD_W)*zoom)+'px';$('shell').style.height=(parseFloat($('world').style.height||WORLD_H)*zoom)+'px';
+ canvas.scrollLeft=ax*zoom-dx;canvas.scrollTop=ay*zoom-dy;
+ updateToolbar();
+}
+function setZoom(z){const rect=$('canvas').getBoundingClientRect();setZoomAt(Math.round(z*100)/100,rect.left+rect.width/2,rect.top+rect.height/2)}
+function fit(){
+ refreshFoldView();const visible=foldView.roots;if(!visible.length)return;
+ const canvas=$('canvas'),minX=Math.min(...visible.map(n=>n.x)),minY=Math.min(...visible.map(n=>n.y));
+ const maxX=Math.max(...visible.map(n=>n.x+WIDTH)),maxY=Math.max(...visible.map(n=>n.y+nodeHeight(n)));
+ const desired=Math.min(1.05,(canvas.clientWidth-100)/(maxX-minX+80),(canvas.clientHeight-80)/(maxY-minY+80));
+ zoom=Math.max(.40,Math.min(1.6,desired));$('world').style.transform=`scale(${zoom})`;
+ const w=Math.max(WORLD_W,maxX+180),h=Math.max(WORLD_H,maxY+180);$('world').style.width=w+'px';$('world').style.height=h+'px';$('edges').setAttribute('viewBox',`0 0 ${w} ${h}`);$('edges').style.width=w+'px';$('edges').style.height=h+'px';
+ $('shell').style.width=(w*zoom)+'px';$('shell').style.height=(h*zoom)+'px';
+ canvas.scrollLeft=Math.max(0,(minX-45)*zoom);canvas.scrollTop=Math.max(0,(minY-50)*zoom);updateToolbar();
+}
+function layout(){
+ refreshFoldView();const visible=foldView.roots;if(!visible.length)return;
+ const ids=new Set(visible.map(n=>n.id)),display=aggregatedEdges();
+ const incoming=new Map(visible.map(n=>[n.id,0]));for(const e of display)incoming.set(e.to,(incoming.get(e.to)||0)+1);
+ let roots=visible.filter(n=>incoming.get(n.id)===0);if(!roots.length)roots=[visible[0]];
+ const levels=new Map(),queue=roots.map(n=>[n.id,0]);
+ while(queue.length){const [current,depth]=queue.shift();if(levels.has(current))continue;levels.set(current,depth);for(const e of display.filter(e=>e.from===current))if(!levels.has(e.to))queue.push([e.to,Math.min(depth+1,9)])}
+ for(const n of visible)if(!levels.has(n.id))levels.set(n.id,Math.max(0,...levels.values())+1);
+ const groups=new Map();for(const n of visible){const d=levels.get(n.id);if(!groups.has(d))groups.set(d,[]);groups.get(d).push(n)}
+ let y=65;const cols=6,step=350;
+ for(const [depth,items] of [...groups].sort((a,b)=>a[0]-b[0])){
+  items.sort((a,b)=>a.x-b.x);
+  for(let idx=0;idx<items.length;idx+=cols){
+   const part=items.slice(idx,idx+cols),width=part.length*WIDTH+(part.length-1)*(step-WIDTH),x0=Math.max(55,(2300-width)/2);
+   let maxHeight=HEIGHT;
+   part.forEach((n,col)=>{n.x=x0+col*step;n.y=y;maxHeight=Math.max(maxHeight,nodeHeight(n))});
+   y+=maxHeight+94;
+  }
+ }
+ scheduleSave();renderAll();setTimeout(fit,20);toast('折りたたみを反映して自動整列しました');
+}
+$('collapseAllBtn').onclick=()=>{for(const n of nodes)n.foldExpanded=false;layout();};
+$('expandAllBtn').onclick=()=>{refreshFoldView();for(const n of nodes)if((foldView.children.get(n.id)||[]).length)n.foldExpanded=true;layout();};
+$('mobileNodeSelect').onchange=ev=>{selected=ev.target.value||null;selectedEdge=null;connectMode=false;connectFrom=null;renderAll();if(selected){const nid=expandAncestors(selected);preventFoldOverlaps();renderNodes();const n=nodeById(nid);const canvas=$('canvas');canvas.scrollLeft=Math.max(0,(n.x-30)*zoom);canvas.scrollTop=Math.max(0,(n.y-35)*zoom);if(window.matchMedia('(max-width:680px)').matches){$('inspectorBody').scrollTop=0}}};
 $('mobileConnect').onclick=()=>{const from=$('mobileFrom').value,to=$('mobileTo').value,kind=$('mobileKind').value;if(!from||!to){toast('接続元と接続先を選んでください');return}if(from===to){toast('同じ関数同士は接続できません');return}if(edges.some(e=>e.from===from&&e.to===to)){toast('すでに接続されています');return}edges.push({id:id(),from,to,kind,origin:'manual'});selected=to;selectedEdge=null;connectMode=false;connectFrom=null;scheduleSave();renderAll();toast('接続を追加しました')};
 $('addBtn').onclick=()=>{const canvas=$('canvas');const x=Math.min(WORLD_W-WIDTH,Math.max(25,(canvas.scrollLeft+canvas.clientWidth/2)/zoom-WIDTH/2));const y=Math.min(WORLD_H-HEIGHT,Math.max(25,(canvas.scrollTop+canvas.clientHeight/2)/zoom-HEIGHT/2));const n={id:id(),name:'new_function()',responsibility:'',input:'',changes:'',unchanged:'',dependencies:'',preconditions:'',contract:'',type:'control',x:x+Math.random()*30,y:y+Math.random()*30};nodes.push(n);selected=n.id;selectedEdge=null;connectMode=false;connectFrom=null;scheduleSave();renderAll();$('field-name')?.focus();toast('新しい関数を作成しました')};$('connectBtn').onclick=()=>{connectMode=!connectMode;connectFrom=null;selectedEdge=null;renderAll()};$('layoutBtn').onclick=layout;$('zoomIn').onclick=()=>setZoom(zoom+.15);$('zoomOut').onclick=()=>setZoom(zoom-.15);$('fitBtn').onclick=fit;
 $('projectSelect').onchange=e=>switchProject(e.target.value);
@@ -331,6 +621,7 @@ $('projectCards').addEventListener('click',e=>{
   persist();const copy=JSON.parse(JSON.stringify({nodes:original.nodes,edges:original.edges,language:original.language||'c',sources:original.sources||[]}));
   // Give cloned nodes and connections new IDs, preserving the relationships.
   const ids=new Map();for(const node of copy.nodes){const old=node.id;node.id=id();ids.set(old,node.id);node.x+=35;node.y+=35;}
+  for(const node of copy.nodes)if(node.foldParentId)node.foldParentId=ids.get(node.foldParentId)||null;
   copy.edges=copy.edges.map(edge=>({...edge,id:id(),from:ids.get(edge.from),to:ids.get(edge.to)})).filter(edge=>edge.from&&edge.to);
   const project=newProject(original.name+' copy',copy);projects.push(project);persist();renderProjectSelect();renderProjectHome();toast('プロジェクトを複製しました');
 });
@@ -349,10 +640,11 @@ function renderSearchResults(){
 }
 function focusNode(nid){
   const n=nodeById(nid);if(!n)return;
+  const visibleId=expandAncestors(nid);preventFoldOverlaps();const visible=nodeById(visibleId)||n;
   hideHome();$('analysisOverlay').hidden=true;
   searchQuery='';$('nodeSearch').value='';renderSearchResults();
   selected=nid;selectedEdge=null;connectMode=false;connectFrom=null;renderAll();
-  const canvas=$('canvas');canvas.scrollLeft=Math.max(0,(n.x-24)*zoom);canvas.scrollTop=Math.max(0,(n.y-24)*zoom);
+  const canvas=$('canvas');canvas.scrollLeft=Math.max(0,(visible.x-24)*zoom);canvas.scrollTop=Math.max(0,(visible.y-24)*zoom);
   $('inspectorBody').scrollTop=0;
 }
 $('nodeSearch').oninput=e=>{searchQuery=e.target.value.trim();renderNodes();renderSearchResults()};
@@ -496,6 +788,7 @@ $('importAllFile').onchange=async e=>{
     currentProjectId=projectIds.has(backup.currentProjectId)?backup.currentProjectId:projects[0].id;
     const active=projects.find(p=>p.id===currentProjectId);
     nodes=active.nodes;edges=active.edges;selected=null;selectedEdge=null;
+    migrateStaticMetadata(active);$('languageSelect').value=ensureProject(active).language;updateUnresolvedCount();
     searchQuery='';$('nodeSearch').value='';persist();renderProjectSelect();renderAll();renderProjectHome();
     toast('全プロジェクトを読み込みました');
   }catch(err){alert('読み込みできませんでした：'+err.message)}finally{e.target.value=''}
@@ -607,7 +900,7 @@ function syncSourceData(stage){
      nodes.push(n);added++;
    }
    if(!n.input||n.input===n.sourceInput)n.input=d.parameters;
-   n.generated=true;n.sourceMissing=false;n.sourceKey=d.key;n.sourceFile=d.path;
+   n.generated=true;n.isStatic=!!d.isStatic;n.sourceMissing=false;n.sourceKey=d.key;n.sourceFile=d.path;
    n.sourceLine=d.line;n.sourceEnd=d.endLine;n.sourceLanguage=d.language;n.sourceInput=d.parameters;
    n.unresolvedCalls=analysis.unresolved.filter(x=>x.fromKey===d.key);
    idByKey.set(d.key,n.id);
@@ -624,9 +917,9 @@ function syncSourceData(stage){
    taken.add(pair);generated.push({id:id(),from,to,kind:'call',origin:'auto'});
  }
  edges=[...manual,...generated];
- const p=ensureProject(currentProject());p.nodes=nodes;p.edges=edges;p.sources=files;
+ const p=ensureProject(currentProject());p.nodes=nodes;p.edges=edges;p.sources=files;p.staticMetadataVersion=2;
  selected=null;selectedEdge=null;connectMode=false;connectFrom=null;
- persist();renderAll();updateUnresolvedCount();setTimeout(()=>{if(nodes.length)fit()},40);
+ persist();renderAll();updateUnresolvedCount();setTimeout(()=>{if(!nodes.length)return;if(added>=5&&added>=nodes.length*.65)layout();else fit()},40);
  toast('解析を反映しました：'+defs.length+' 関数 / '+generated.length+' 自動接続');
  return {added,generated:generated.length};
 }
@@ -682,13 +975,49 @@ $('importFile').onchange=async event=>{
    const p=ensureProject(currentProject());p.language=['c','py'].includes(data.language)?data.language:p.language;
    p.sources=Array.isArray(data.sources)?data.sources.filter(s=>typeof s.path==='string'&&typeof s.text==='string').slice(0,150):[];
    nodes=data.nodes;edges=data.edges.filter(e=>e&&ids.has(e.from)&&ids.has(e.to)).map(e=>({...e,origin:e.origin==='auto'?'auto':'manual',kind:e.kind==='state'?'state':'call'}));
-   $('languageSelect').value=p.language;selected=null;selectedEdge=null;persist();renderAll();updateUnresolvedCount();setTimeout(fit,50);toast('プロジェクトを復元しました');
+   $('languageSelect').value=p.language;selected=null;selectedEdge=null;migrateStaticMetadata(p);persist();renderAll();updateUnresolvedCount();setTimeout(fit,50);toast('プロジェクトを復元しました');
  }catch(err){alert('読み込み失敗：'+err.message)}finally{event.target.value=''}
 };
 
+/* -------- v4.1: edge controls -------- */
+function updateDeleteEdgeButton(){
+ const btn=$('quickDeleteEdge');
+ if(btn)btn.hidden=!selectedEdge||!edges.some(e=>e.id===selectedEdge);
+}
+function deleteEdgeById(edgeId){
+ if(!edges.some(e=>e.id===edgeId))return;
+ edges=edges.filter(e=>e.id!==edgeId);
+ if(selectedEdge===edgeId)selectedEdge=null;
+ scheduleSave();renderAll();renderEdgeList();toast('接続を削除しました');
+}
+function renderEdgeList(){
+ const body=$('edgeListBody');if(!body)return;
+ if(!edges.length){body.innerHTML='<div class="empty">接続がありません。ノードの青い丸からドラッグして作成できます。</div>';return;}
+ body.innerHTML='';
+ for(const edge of edges){
+  const row=document.createElement('div');row.className='edge-list-row';
+  const desc=document.createElement('div');desc.style.minWidth='0';desc.style.flex='1';
+  const route=document.createElement('div');route.className='edge-route';
+  route.textContent=(nodeById(edge.from)?.name||'?')+' → '+(nodeById(edge.to)?.name||'?');
+  const sub=document.createElement('div');sub.className='edge-description';
+  sub.textContent=(edge.origin==='auto'?'自動生成':'手動接続')+'・'+(edge.kind==='state'?'状態依存':'関数呼び出し');
+  desc.append(route,sub);
+  const actions=document.createElement('div');actions.className='edge-actions';
+  const show=document.createElement('button');show.className='btn small';show.type='button';show.textContent='選択';
+  show.onclick=()=>{$('edgeListOverlay').hidden=true;selectedEdge=edge.id;selected=null;connectMode=false;connectFrom=null;renderAll();const n=nodeById(edge.from);if(n){const c=$('canvas');c.scrollLeft=Math.max(0,(n.x-32)*zoom);c.scrollTop=Math.max(0,(n.y-32)*zoom)}};
+  const del=document.createElement('button');del.className='btn small danger';del.type='button';del.textContent='削除';del.setAttribute('aria-label',route.textContent+' を削除');
+  del.onclick=()=>deleteEdgeById(edge.id);
+  actions.append(show,del);row.append(desc,actions);body.appendChild(row);
+ }
+}
+$('edgeListBtn').onclick=()=>{renderEdgeList();$('edgeListOverlay').hidden=false};
+$('closeEdgeList').onclick=$('closeEdgeListBottom').onclick=()=>$('edgeListOverlay').hidden=true;
+$('edgeListOverlay').addEventListener('pointerdown',e=>{if(e.target===$('edgeListOverlay'))$('edgeListOverlay').hidden=true});
+$('quickDeleteEdge').onclick=()=>{if(selectedEdge)deleteEdgeById(selectedEdge)};
+
 // Touch and mouse: drag a node's port to create an arrow; drag an arrow / its endpoint to reconnect.
 function startEdgeDrag(ev,options){
- if(edgeDrag)return;
+ if(edgeDrag||pinchState)return;
  const anchor=options.type==='new'?nodeById(options.from):null;
  edgeDrag={...options,pointerId:ev.pointerId,startX:ev.clientX,startY:ev.clientY,clientX:ev.clientX,clientY:ev.clientY,moved:false};
  window._fcIgnoreEdgeClickUntil=Date.now()+200;
@@ -700,7 +1029,7 @@ function drawEdgePreview(clientX,clientY){
  if(!edgeDrag)return;
  let origin;
  if(edgeDrag.type==='new'){const n=nodeById(edgeDrag.from);if(!n)return;origin={x:n.x+WIDTH,y:n.y+HEIGHT/2}}
- else {const e=edges.find(x=>x.id===edgeDrag.edgeId);if(!e)return;const n=nodeById(edgeDrag.end==='to'?e.from:e.to);if(!n)return;origin={x:n.x+(edgeDrag.end==='to'?WIDTH:0),y:n.y+HEIGHT/2}}
+ else {const e=edges.find(x=>x.id===edgeDrag.edgeId);if(!e)return;const n=nodeById(foldRoot(edgeDrag.end==='to'?e.from:e.to));if(!n)return;origin={x:n.x+(edgeDrag.end==='to'?WIDTH:0),y:n.y+HEIGHT/2}}
  const end=worldPoint(clientX,clientY);
  let x1=origin.x,y1=origin.y,x2=end.x,y2=end.y;
  if(edgeDrag.type==='existing'&&edgeDrag.end==='from'){x1=end.x;y1=end.y;x2=origin.x;y2=origin.y}
@@ -713,9 +1042,10 @@ window.addEventListener('pointermove',e=>{
  if(dd>8)edgeDrag.moved=true;
  edgeDrag.clientX=e.clientX;edgeDrag.clientY=e.clientY;drawEdgePreview(e.clientX,e.clientY);
 },true);
+window.addEventListener('pointercancel',e=>{if(edgeDrag&&edgeDrag.pointerId===e.pointerId){edgeDrag=null;$('dragPreview')?.remove();renderEdges()}});
 window.addEventListener('pointerup',e=>{
  if(!edgeDrag||edgeDrag.pointerId!==e.pointerId)return;
- const config=edgeDrag;edgeDrag=null;
+ const config=edgeDrag;edgeDrag=null;connectMode=false;connectFrom=null;
  const target=document.elementFromPoint(e.clientX,e.clientY)?.closest('.node');const targetId=target?.dataset.id;
  if(config.type==='new'){
    if(!config.moved){connectMode=true;connectFrom=config.from;selected=null;selectedEdge=null;toast('接続先の関数をタップしてください')}
@@ -737,8 +1067,10 @@ window.addEventListener('pointerup',e=>{
  renderAll();updateUnresolvedCount();
 },true);
 
-load();const active=projects.find(p=>p.id===currentProjectId);if(active){if(!active.language)active.language="c";if(!Array.isArray(active.sources))active.sources=[];$("languageSelect").value=active.language;}renderAll();updateUnresolvedCount();setZoom(.8);setTimeout(fit,120);showHome();
+load();const active=projects.find(p=>p.id===currentProjectId);if(active){if(!active.language)active.language="c";if(!Array.isArray(active.sources))active.sources=[];$("languageSelect").value=active.language;migrateStaticMetadata(active);}renderAll();updateUnresolvedCount();setZoom(.8);setTimeout(fit,120);showHome();
 })();
+
+
 
 
 </script></body></html>

@@ -65,7 +65,7 @@ function parseC(path,text){
     if(c!=='{')continue;
     const raw=masked.slice(lastBoundary,i),header=raw.trim();
     const close=header.lastIndexOf(')');
-    let name='',params='',matchHeader=false;
+    let name='',params='',matchHeader=false,isStatic=false;
     if(close>=0&&/^\s*$/.test(header.slice(close+1))){
       let depth=0,open=-1;
       for(let j=close;j>=0;j--){if(header[j]===')')depth++;else if(header[j]==='('&&--depth===0){open=j;break}}
@@ -73,7 +73,7 @@ function parseC(path,text){
         const before=header.slice(0,open),m=before.match(/([A-Za-z_]\w*)\s*$/);
         if(m){name=m[1];params=header.slice(open+1,close).replace(/\s+/g,' ').trim();
           const prefix=before.slice(0,m.index).trim();
-          matchHeader=!!prefix&&!/[=]/.test(prefix)&&!/\b(typedef|return|if|while|for|switch)\b/.test(prefix)&&!C_KEYWORDS.has(name)&&!/^#/.test(prefix);
+          matchHeader=!!prefix&&!/[=]/.test(prefix)&&!/\b(typedef|return|if|while|for|switch)\b/.test(prefix)&&!C_KEYWORDS.has(name)&&!/^#/.test(prefix);isStatic=matchHeader&&/\bstatic\b/.test(prefix);
         }
       }
     }
@@ -96,7 +96,7 @@ function parseC(path,text){
       calls.push({name:cm[1],line:lineOf(text,bodyStart+cm.index)});
     }
     const line=lineOf(text,functionStart),endLine=lineOf(text,j);
-    defs.push({path,language:'c',name,qualName:name,parameters:params,
+    defs.push({path,language:'c',name,qualName:name,parameters:params,isStatic,
       line,endLine,source:text.slice(functionStart,j+1),calls});
     i=j;lastBoundary=j+1;
   }
