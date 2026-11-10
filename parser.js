@@ -1,10 +1,11 @@
-/* Function Canvas parser: conservative, browser-only static analysis.
+/* Function Canvas parser v5: conservative, browser-only static analysis.
  * Contract: parseSources([{path,text}], language) => {definitions, calls, unresolved}
  * This is intentionally not a compiler or a complete Python AST implementation.
  */
 (function(root){'use strict';
 const C_KEYWORDS = new Set(['if','for','while','switch','return','sizeof','_Alignof','_Generic','do','case','else','typedef','struct','union','enum','defined','__attribute__','__asm__','_Static_assert']);
 const PY_KEYWORDS = new Set(['if','elif','while','for','with','except','return','yield','assert','raise','lambda','class','def','async','await','not','and','or','in','is','printcall']);
+const PY_BUILTINS = new Set(['print','len','range','int','float','str','bool','list','tuple','set','dict','enumerate','zip','sorted','reversed','sum','min','max','abs','all','any','isinstance','issubclass','super','open','type','object','classmethod','staticmethod','property','iter','next','map','filter','input','id','hash','bytes','bytearray','round','slice','format','repr','getattr','setattr','hasattr','delattr','Exception','ValueError','TypeError','RuntimeError']);
 function blankKeepLine(s){return s.replace(/[^\r\n]/g,' ')}
 function maskC(src){
   let out='',mode='normal',escaped=false;
@@ -93,7 +94,8 @@ function parseC(path,text){
     while((cm=callRegex.exec(body))!==null){
       if(C_KEYWORDS.has(cm[1]))continue;
       // Parenthesized type casts are filtered later as unresolved candidates.
-      calls.push({name:cm[1],line:lineOf(text,bodyStart+cm.index)});
+      const prefix=body.slice(Math.max(0,cm.index-8),cm.index);
+      calls.push({name:cm[1],receiver:/\.\s*$|->\s*$/.test(prefix)?'indirect':'',line:lineOf(text,bodyStart+cm.index)});
     }
     const line=lineOf(text,functionStart),endLine=lineOf(text,j);
     defs.push({path,language:'c',name,qualName:name,parameters:params,isStatic,
@@ -138,6 +140,7 @@ function parsePython(path,text){
 }
 function resolveCall(def,call,defs,language){
   const names=defs.filter(x=>x.name===call.name),sameFile=names.filter(x=>x.path===def.path);
+  if(language==='c'&&call.receiver)return {reason:'関数ポインタ・メンバーを経由した呼び出し（未解決）'};
   if(language==='py'){
     if(call.receiver==='self'||call.receiver==='cls'){
       const className=def.qualName.split('.').slice(0,-1).join('.');
@@ -154,9 +157,14 @@ function resolveCall(def,call,defs,language){
     if(lexical.length===1)return {target:lexical[0]};
     const moduleCandidate=names.filter(x=>x.path===def.path&&x.qualName===call.name);
     if(moduleCandidate.length===1)return {target:moduleCandidate[0]};
-  }else if(sameFile.length===1)return {target:sameFile[0]};
-  if(names.length===1)return {target:names[0]};
-  return {reason:names.length>1?'同名の定義が複数あり特定不能':'外部関数・未提供の定義・マクロの可能性'};
+    // Imported symbols are deliberately not resolved from matching names in unrelated modules.
+    return {reason:'外部モジュールや実行時の名前解決は未確定'};
+  }
+  if(sameFile.length===1)return {target:sameFile[0]};
+  if(sameFile.length>1)return {reason:'同じファイルに同名定義が複数あるため未解決'};
+  const external=names.filter(x=>!x.isStatic);
+  if(external.length===1)return {target:external[0]};
+  return {reason:external.length>1?'同名の外部公開関数が複数あるため未解決':'外部関数・未提供の定義・マクロの可能性'};
 }
 function parseSources(sources,language){
   const defs=[];for(const file of sources){
@@ -172,7 +180,7 @@ function parseSources(sources,language){
       const match=resolveCall(def,call,defs,language);
       if(match.target){const k=def.key+'::'+match.target.key;
         if(!keyPairs.has(k)){keyPairs.add(k);links.push({fromKey:def.key,toKey:match.target.key})}
-      }else unresolved.push({fromKey:def.key,caller:def.qualName,path:def.path,line:call.line,
+      }else if(!(language==='py'&&!call.receiver&&PY_BUILTINS.has(call.name)))unresolved.push({fromKey:def.key,caller:def.qualName,path:def.path,line:call.line,
         target:(call.receiver?call.receiver+'.':'')+call.name,reason:match.reason});
     }
   }

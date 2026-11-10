@@ -1,6 +1,6 @@
-const CACHE_NAME = 'function-canvas-shell-v42-20261110';
+const CACHE_NAME = 'function-canvas-shell-v5-20261110';
 const ASSETS = [
-  './','./index.html','./parser.js','./jszip.min.js',
+  './','./index.html','./parser.js','./classifier.js','./jszip.min.js',
   './manifest.webmanifest','./icon-192.png','./icon-512.png','./apple-touch-icon.png'
 ];
 self.addEventListener('install', event => {

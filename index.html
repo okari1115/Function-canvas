@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover" />
-<title>Function Canvas v4.2 — 関数設計マップ</title>
+<title>Function Canvas v5 — 関数設計マップ</title>
 <link rel="manifest" href="./manifest.webmanifest" />
 <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
 <meta name="description" content="42課題の関数設計と依存関係を管理するワークスペース" />
@@ -161,6 +161,75 @@ body.is-home .app{display:none!important}
 .edge-count-bubble{fill:#316bd3;stroke:#fff;stroke-width:2;pointer-events:none}
 .fold-legend{color:#3163a1}
 @media(max-width:680px){.fold-strip{padding:4px 7px}.fold-list{max-height:240px}.fold-toggle{min-height:34px}.fold-editor{padding:9px}}
+/* Function Canvas v5 architecture navigator */
+.arch-hidden{display:none!important}
+[hidden]{display:none!important}
+.arch-toolbar{display:flex;align-items:center;gap:6px;border-right:1px solid #e2e8f2;padding-right:9px}
+.arch-toolbar .btn.active{background:#e6efff;border-color:#a4c4fd;color:#265bad}
+.arch-nav-label{font-size:11px;color:#647a95;font-weight:700;white-space:nowrap}
+.arch-board{position:relative;min-height:100%;min-width:100%;width:max-content;max-width:none;background:linear-gradient(145deg,#f3f7fd,#fafcff);padding:36px 35px 85px;isolation:isolate}
+.arch-board button{touch-action:manipulation}
+.arch-overview-head{max-width:920px;margin:0 0 32px;display:flex;justify-content:space-between;align-items:center;gap:18px}
+.arch-eyebrow{font-size:10px;letter-spacing:.13em;color:#5480b7;font-weight:900}
+.arch-overview-head h2,.arch-detail-heading h2{font-size:25px;letter-spacing:-.045em;margin:6px 0 9px;color:#1d3657}
+.arch-overview-head h2 span{font-size:14px;font-weight:600;color:#607b9c}
+.arch-overview-head p,.arch-detail-heading p{font-size:12px;color:#6e829a;max-width:575px;line-height:1.75;margin:0}
+.arch-metrics{display:flex;gap:8px;flex-wrap:wrap;max-width:300px}
+.arch-metrics span{border:1px solid #d9e4f2;background:white;border-radius:11px;padding:8px 10px;font-size:10px;color:#6d809a;white-space:nowrap}
+.arch-metrics strong{color:#245eab;font-size:17px;display:block}
+.arch-overview-grid{width:930px;display:grid;grid-template-columns:repeat(3,270px);gap:65px 60px;position:relative;align-items:start}
+.arch-connectors{position:absolute;left:0;top:0;pointer-events:none;overflow:visible;z-index:0}
+.arch-wire{fill:none;stroke:#a6b4c5;stroke-width:2;opacity:.65;stroke-linecap:round}
+.arch-group-card{min-height:206px;width:270px;display:flex;flex-direction:column;position:relative;z-index:1;border:1px solid #d6e2f0;border-top:5px solid var(--group-color);border-radius:13px;text-align:left;padding:16px;background:#fff;box-shadow:0 10px 30px #23487410;color:#263e60}
+.arch-group-card:hover,.arch-group-card:focus-visible{outline:2px solid #88aef1;outline-offset:3px;transform:translateY(-1px)}
+.arch-group-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.arch-group-symbol{font-size:24px;font-weight:800;color:var(--group-color)}
+.arch-group-count{font-size:10px;background:#f2f6fc;border-radius:99px;padding:4px 7px;color:#68809c}
+.arch-group-card h3{font-size:16px;letter-spacing:-.025em;margin:10px 0 5px;color:#243c5c}
+.arch-group-card p{font-size:11px;color:#8290a4;margin:0 0 9px}
+.arch-group-functions{display:flex;flex-wrap:wrap;gap:5px;margin:auto 0 11px}
+.arch-group-functions span{font-size:10px;background:#f1f5fb;padding:4px 6px;border-radius:6px;max-width:100%;overflow-wrap:anywhere}
+.arch-group-footer{border-top:1px solid #e9edf4;padding-top:8px;display:flex;justify-content:space-between;font-size:10px;color:#8190a3;gap:7px}
+.arch-help{font-size:11px;color:#6f819b;line-height:1.65;max-width:970px;margin:12px 0 23px;padding:12px 15px;background:#edf4fc;border-left:3px solid #8eadd6;border-radius:7px}
+.arch-detail-head{min-width:850px;max-width:1250px;margin-bottom:20px}
+.arch-breadcrumb{display:flex;align-items:center;gap:11px;font-size:12px;color:#8393a6;font-weight:600}
+.arch-breadcrumb button{border:0;background:none;color:#2e6aa9;font-size:12px;font-weight:750;padding:3px}
+.arch-detail-heading{display:flex;align-items:center;gap:15px;margin:16px 0}
+.arch-big-icon{font-size:36px;background:#fff;border:1px solid #dce7f2;border-radius:15px;width:60px;height:60px;display:grid;place-items:center}
+.arch-detail-actions{display:flex;align-items:center;gap:9px}
+.arch-detail-actions label{font-size:12px;font-weight:600;color:#5a7190;display:flex;gap:5px;align-items:center}
+.arch-detail-actions select{border-radius:6px;border:1px solid #cad9e9;padding:7px;background:#fff}
+.arch-flow-scroll{max-width:none}
+.arch-flow{position:relative;display:flex;gap:56px;align-items:flex-start;min-width:650px;width:max-content;min-height:230px;padding:10px 8px 55px}
+.arch-lane{position:relative;z-index:1;width:245px;flex:0 0 245px;display:flex;flex-direction:column;gap:28px}
+.arch-lane-title{font-size:11px;color:#6787aa;text-transform:uppercase;font-weight:900;padding-left:5px;border-bottom:1px solid #cbd9e9;padding-bottom:11px;white-space:nowrap}
+.arch-function-card{background:#fff;border:1px solid #cfdaea;border-left:5px solid var(--group-color);border-radius:12px;padding:13px 13px 11px;box-shadow:0 8px 22px #24415c15;min-height:114px;cursor:pointer;position:relative;color:#243956}
+.arch-function-card:hover{border-color:#7cabe7;box-shadow:0 11px 23px #355f9d25}
+.arch-function-card:focus-visible{outline:2px solid #568ae0}
+.arch-node-selected{outline:2px solid #5084db;outline-offset:2px}
+.arch-function-name{font-weight:800;overflow-wrap:anywhere;line-height:1.35;font-size:13px}
+.arch-static{font-size:9px;color:#3167a0;background:#e4f0fe;padding:2px 4px;border-radius:5px}
+.arch-function-details{font-size:11px;line-height:1.5;max-height:50px;overflow:hidden;color:#617892;margin:8px 0}
+.arch-function-footer{font-size:9px;color:#8798ab;display:flex;justify-content:space-between;gap:7px;border-top:1px solid #e9edf4;padding-top:7px}
+.arch-fold{padding-top:9px;margin-top:10px;border-top:1px solid #e5edf7}
+.arch-fold-toggle{background:#edf4ff;border:1px solid #cfdef4;border-radius:6px;font-size:11px;color:#315e99;font-weight:750;width:100%;text-align:left;padding:8px}
+.arch-fold-list{max-height:285px;overflow-y:auto;margin-top:6px;border:1px solid #e3ecf7;border-radius:8px;background:#fbfdff}
+.arch-external{margin-top:32px;background:#fff;border:1px solid #d8e4f1;border-radius:13px;padding:15px 18px;max-width:920px}
+.arch-external h3{font-size:14px;color:#35516f;margin:0 0 10px}
+.arch-external p{font-size:11px;color:#8899ac;margin:9px 0 0}
+.arch-external-pills{display:flex;flex-wrap:wrap;gap:7px}
+.arch-external-pills button{border:1px solid #cddbed;color:#34699f;background:#f5f9ff;border-radius:8px;padding:8px 10px;font-size:12px}
+.arch-external-pills b{margin-left:5px;background:#e4effc;padding:2px 4px;border-radius:4px}
+.arch-empty{background:#fff;border:1px dashed #cad9ee;color:#647d9c;border-radius:10px;padding:34px}
+.arch-classification{border:1px solid #dce8f7;background:#f4f9ff;border-radius:10px;padding:12px;margin-bottom:14px}
+.arch-classification strong{font-size:12px;color:#315f99}
+.arch-classification p{font-size:11px;line-height:1.6;color:#687f9c;margin:5px 0 10px}
+.arch-classification .field{margin-bottom:6px}
+.arch-classification .role-status{font-size:10px;background:#e4eeff;color:#365d94;border-radius:5px;padding:3px 6px;display:inline-block;margin:4px 0}
+.arch-classification button{background:transparent;border:0;color:#2766ab;padding:4px;font-size:11px;text-decoration:underline}
+@media(max-width:900px){.arch-board{padding:20px 19px 60px}.arch-overview-head{display:block}.arch-metrics{margin-top:10px}.arch-overview-grid{grid-template-columns:repeat(2,235px);width:500px;gap:34px 30px}.arch-group-card{width:235px}.arch-detail-head{min-width:650px}}
+@media(max-width:680px){.arch-overview-grid{grid-template-columns:1fr;width:280px}.arch-group-card{width:280px}.arch-board{padding:19px 15px 42px}.arch-overview-head h2,.arch-detail-heading h2{font-size:20px}.arch-metrics strong{font-size:14px}.arch-group-card{min-height:180px}.arch-detail-heading{margin:10px 0}.arch-flow{gap:33px}.arch-lane{flex-basis:225px;width:225px}.arch-toolbar{gap:4px}}
+
 </style>
 </head>
 <body>
@@ -216,16 +285,17 @@ body.is-home .app{display:none!important}
   </div>
 </section>
 
-<div class="app"><main class="main"><div class="toolbar"><div class="toolbar-group"><button class="btn primary" id="addBtn">＋ 新しい関数</button><button class="btn" id="connectBtn">↗ 接続する</button><button class="btn" id="edgeListBtn">↗ 接続一覧・削除</button><button class="btn danger" id="quickDeleteEdge" hidden>選択した矢印を削除</button><button class="btn" id="sourceImportBtn">⇧ ソース / ZIP</button><input id="sourceFileInput" class="file-input" type="file" multiple accept=".c,.h,.py,.zip,application/zip"/><button class="btn" id="layoutBtn">▦ 自動整列</button><button class="btn" id="collapseAllBtn">▸ 全部たたむ</button><button class="btn" id="expandAllBtn">▾ 全部開く</button><button class="btn" id="analysisBtn">◎ 依存関係の分析</button><button class="btn" id="unresolvedBtn">? 未解決 <span id="unresolvedCount">0</span></button></div>
+<div class="app"><main class="main"><div class="toolbar"><div class="arch-toolbar"><button class="btn active" id="archOverviewBtn" title="機能グループで全体を見る">◫ 機能マップ</button><button class="btn" id="archRawBtn" title="従来の全関数キャンバス">⌘ 通常キャンバス</button><span class="arch-nav-label" id="archNavLabel">機能マップ</span></div><div class="toolbar-group"><button class="btn primary" id="addBtn">＋ 新しい関数</button><button class="btn" id="connectBtn">↗ 接続する</button><button class="btn" id="edgeListBtn">↗ 接続一覧・削除</button><button class="btn danger" id="quickDeleteEdge" hidden>選択した矢印を削除</button><button class="btn" id="sourceImportBtn">⇧ ソース / ZIP / TAR</button><input id="sourceFileInput" class="file-input" type="file" multiple accept=".c,.h,.py,.zip,.tar.gz,.tgz,application/zip"/><button class="btn" id="layoutBtn">▦ 自動整列</button><button class="btn" id="collapseAllBtn">▸ 全部たたむ</button><button class="btn" id="expandAllBtn">▾ 全部開く</button><button class="btn" id="analysisBtn">◎ 依存関係の分析</button><button class="btn" id="unresolvedBtn">? 未解決 <span id="unresolvedCount">0</span></button></div>
 <div class="searchbox"><label class="sr-only" for="nodeSearch">関数を検索</label><input id="nodeSearch" autocomplete="off" placeholder="⌕ 関数を検索（名前・責務・契約）" /><button id="clearSearch" class="search-clear" aria-label="検索を消す">×</button><div class="search-results" id="searchResults" hidden></div></div><div class="toolbar-group"><span class="help-pill" id="zoomLabel">100%</span><button class="btn small" id="zoomOut" aria-label="縮小">－</button><button class="btn small" id="zoomIn" aria-label="拡大">＋</button><button class="btn small" id="fitBtn">全体表示</button></div></div><div class="mobile-controls" id="mobileControls">
 <label>編集する関数<select id="mobileNodeSelect"><option value="">関数を選択</option></select></label>
 <label>接続元<select id="mobileFrom"><option value="">接続元を選択</option></select></label>
 <label>接続先<select id="mobileTo"><option value="">接続先を選択</option></select></label>
 <label>関係<select id="mobileKind"><option value="call">関数呼び出し →</option><option value="state">状態更新・依存 ⇢</option></select></label>
 <button class="btn primary" id="mobileConnect">接続を追加</button>
-</div><div class="canvas-wrap" id="canvas"><div class="legend-strip"><span class="key-auto"></span>自動検出 <span class="key-manual"></span>手動接続 <span class="key-state"></span>状態依存 <span class="fold-legend">▸ static補助関数は親に収納</span></div><div class="canvas-hint" id="hint">ノードをドラッグして移動 ・ 選択すると右側で編集できます</div><div class="world-shell" id="shell"><div class="world" id="world"><svg class="edges" id="edges" viewBox="0 0 2600 1900"><defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 L9 4.5 L0 9 Z" fill="#8798ac"/></marker><marker id="arrowState" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 L9 4.5 L0 9 Z" fill="#8559c5"/></marker></defs><g id="edgeLayer"></g></svg><div id="nodeLayer"></div></div></div></div></main><aside class="inspector"><div class="inspector-head"><div><h2 id="inspectorTitle">関数設計メモ</h2><p id="inspectorSubtitle">ノードを選ぶと詳細を編集できます</p></div><span style="font-size:22px;color:#a0afc2">☷</span></div><div class="inspector-body" id="inspectorBody"></div></aside></div><div class="status" id="toast" role="status"></div>
+</div><div class="canvas-wrap" id="canvas"><div class="legend-strip" id="legendStrip"><span class="key-auto"></span>自動検出 <span class="key-manual"></span>手動接続 <span class="key-state"></span>状態依存 <span class="fold-legend">▸ static補助関数は親に収納</span></div><div class="canvas-hint" id="hint">ノードをドラッグして移動 ・ 選択すると右側で編集できます</div><div class="arch-board" id="archBoard" hidden></div><div class="world-shell" id="shell"><div class="world" id="world"><svg class="edges" id="edges" viewBox="0 0 2600 1900"><defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 L9 4.5 L0 9 Z" fill="#8798ac"/></marker><marker id="arrowState" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 L9 4.5 L0 9 Z" fill="#8559c5"/></marker></defs><g id="edgeLayer"></g></svg><div id="nodeLayer"></div></div></div></div></main><aside class="inspector"><div class="inspector-head"><div><h2 id="inspectorTitle">関数設計メモ</h2><p id="inspectorSubtitle">ノードを選ぶと詳細を編集できます</p></div><span style="font-size:22px;color:#a0afc2">☷</span></div><div class="inspector-body" id="inspectorBody"></div></aside></div><div class="status" id="toast" role="status"></div>
 <script src="./jszip.min.js"></script>
 <script src="./parser.js"></script>
+<script src="./classifier.js"></script>
 <script>
 
 
@@ -258,13 +328,13 @@ function persist(){
 }
 function scheduleSave(){if(saveQueued)return;saveQueued=true;setTimeout(()=>{saveQueued=false;persist();},200)}
 function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.classList.remove('show'),2300)}
-function newProject(name,data){const map=data||blankMap();return {id:id(),name,nodes:map.nodes,edges:map.edges,language:map.language||'c',sources:map.sources||[]}}
+function newProject(name,data){const map=data||blankMap();return {id:id(),name,nodes:map.nodes,edges:map.edges,language:map.language||'c',sources:map.sources||[],archMode:map.archMode||'overview',archGroup:map.archGroup||'sort'}}
 function renderProjectSelect(){const select=$('projectSelect');select.innerHTML='';for(const p of projects){const opt=document.createElement('option');opt.value=p.id;opt.textContent=p.name;select.appendChild(opt)}select.value=currentProjectId;}
 function switchProject(projectId){
   if(!projects.some(p=>p.id===projectId))return;
   persist();currentProjectId=projectId;
   const p=projects.find(p=>p.id===projectId);nodes=p.nodes;edges=p.edges;
-  if(!p.language)p.language='c';if(!Array.isArray(p.sources))p.sources=[];migrateStaticMetadata(p);$('languageSelect').value=p.language;updateUnresolvedCount();
+  if(!p.language)p.language='c';if(!Array.isArray(p.sources))p.sources=[];migrateStaticMetadata(p);archMode=p.archMode||'overview';archGroup=p.archGroup||'sort';archFocusId=null;$('languageSelect').value=p.language;updateUnresolvedCount();
   selected=null;selectedEdge=null;connectFrom=null;connectMode=false;drag=null;
   persist();renderProjectSelect();renderAll();hideHome();setTimeout(fit,40);toast('「'+p.name+'」を開きました');
 }
@@ -443,6 +513,15 @@ function pathFor(a,b){
  const right=b.x>a.x;sx=a.x+(right?WIDTH:0);sy=a.y+Math.min(HEIGHT,ah)/2;tx=b.x+(right?0:WIDTH);ty=b.y+Math.min(HEIGHT,bh)/2;
  const d=Math.max(40,Math.abs(tx-sx)*.5);return `M ${sx} ${sy} C ${sx+(right?d:-d)} ${sy}, ${tx+(right?-d:d)} ${ty}, ${tx} ${ty}`;
 }
+function updateWorldBounds(){
+ const items=foldView.roots.length?foldView.roots:nodes;
+ const maxX=Math.max(WORLD_W,...items.map(n=>Math.max(0,n.x)+WIDTH+250));
+ const maxY=Math.max(WORLD_H,...items.map(n=>Math.max(0,n.y)+nodeHeight(n)+250));
+ const world=$('world');world.style.width=maxX+'px';world.style.height=maxY+'px';
+ $('edges').setAttribute('viewBox',`0 0 ${maxX} ${maxY}`);
+ $('edges').style.width=maxX+'px';$('edges').style.height=maxY+'px';
+ $('shell').style.width=(maxX*zoom)+'px';$('shell').style.height=(maxY*zoom)+'px';
+}
 function renderEdges(){
  refreshFoldView();const layer=$('edgeLayer');layer.innerHTML='';
  for(const group of aggregatedEdges()){
@@ -477,14 +556,28 @@ function renderMobile(){
    el.innerHTML=choices;el.value=value;
  }
 }
-function renderAll(){refreshFoldView();renderEdges();renderNodes();renderInspector();updateToolbar();renderMobile();updateDeleteEdgeButton()}
+function renderAll(){refreshFoldView();updateWorldBounds();renderEdges();renderNodes();renderInspector();updateToolbar();renderMobile();updateDeleteEdgeButton();renderArchitecture()}
 function updateToolbar(){$('connectBtn').classList.toggle('active',connectMode);$('connectBtn').textContent=connectMode?'× 接続を中止':'↗ 接続する';$('hint').textContent=connectMode?(connectFrom?'接続先の関数をクリックしてください':'接続元の関数をクリックしてください'):'青い丸から矢印をドラッグ／矢印を選んで削除／二本指でズーム';$('zoomLabel').textContent=Math.round(zoom*100)+'%'}
 function fieldControl(key,label,ph,value){const idd='field-'+key;const multiline=['responsibility','preconditions','contract','dependencies'].includes(key);return `<div class="field"><label for="${idd}">${label}</label>${multiline?`<textarea id="${idd}" data-field="${key}" placeholder="${ph}" rows="2">${escapeHtml(value)}</textarea>`:`<input id="${idd}" data-field="${key}" placeholder="${ph}" value="${escapeHtml(value)}" />`}</div>`}
+function roleEditor(n){
+ const suggestion=FCClassifier.infer(n),classification=FCClassifier.classification(n),meta=groupMeta(classification.group);
+ const detail=suggestion.evidence.length?suggestion.evidence.join('、'):'名前やファイル名からは特定困難';
+ return `<section class="arch-classification"><strong>◫ 機能グループ（表示上の分類）</strong>
+ <p>推定：${escapeHtml(groupMeta(suggestion.group).label)} ／ 信頼目安 ${suggestion.confidence}（${escapeHtml(detail)}）</p>
+ <span class="role-status">${classification.confirmed?'手動確定':'自動推定'}</span>
+ <div class="field"><label for="roleGroupSelect">所属グループ</label><select id="roleGroupSelect">${FCClassifier.GROUPS.map(g=>`<option value="${g.id}" ${classification.group===g.id?'selected':''}>${escapeHtml(g.label)}</option>`).join('')}</select></div>
+ ${n.roleOverride?'<button id="roleResetButton">自動推定に戻す</button>':''}
+ <p>分類の変更は呼び出し線や手書きメモには影響しません。再読み込み後も手動分類を保持します。</p></section>`;
+}
+function bindRoleEditor(n){
+ const s=$('roleGroupSelect');if(s)s.onchange=ev=>{n.roleOverride=ev.target.value;scheduleSave();renderInspector();renderArchitecture();toast('分類を手動確定しました')};
+ const r=$('roleResetButton');if(r)r.onclick=()=>{delete n.roleOverride;scheduleSave();renderInspector();renderArchitecture();toast('自動推定に戻しました')};
+}
 function renderInspector(){let body=$('inspectorBody');if(selectedEdge){const e=edges.find(x=>x.id===selectedEdge);if(!e){selectedEdge=null;return renderInspector()}const a=nodeById(e.from),b=nodeById(e.to);$('inspectorTitle').textContent='接続の編集';$('inspectorSubtitle').textContent='関数同士の関係を設定';body.innerHTML=`<div class="field"><label>接続元</label><div class="chip">${escapeHtml(a?.name||'?')}</div></div><div class="field"><label>接続先</label><div class="chip">${escapeHtml(b?.name||'?')}</div></div><div class="field"><label>作成方法</label><div class="chip">${e.origin==='auto'?'ソースから自動生成':'手動で作成'}</div></div><div class="field"><label for="edgeKind">関係の種類</label><select id="edgeKind"><option value="call" ${e.kind!=='state'?'selected':''}>関数呼び出し（実線）</option><option value="state" ${e.kind==='state'?'selected':''}>状態の更新・依存（破線）</option></select></div><button class="btn danger" id="deleteEdge">この接続を削除</button>`;$('edgeKind').onchange=ev=>{e.kind=ev.target.value;scheduleSave();renderEdges()};$('deleteEdge').onclick=()=>{edges=edges.filter(x=>x.id!==e.id);selectedEdge=null;scheduleSave();renderAll();toast('接続を削除しました')};return}
 if(!selected){$('inspectorTitle').textContent='関数設計メモ';$('inspectorSubtitle').textContent='ノードを選んで契約を記入';body.innerHTML='<div class="empty"><span class="em">✎</span>ノードをクリックすると<br>「責務・入力・変更するもの・契約」などを<br>編集できます。<br><br>「＋ 新しい関数」で追加、<br>「接続する」で関数をつなげます。</div><div class="section-title">このアプリでできること</div><div class="connections"><span class="chip">ドラッグ移動</span><span class="chip">ノード編集</span><span class="chip">矢印で接続</span><span class="chip">ソース解析</span><span class="chip">ZIP取り込み</span><span class="chip">JSON保存・読込</span><span class="chip">自動保存</span></div>';return}
-const n=nodeById(selected);if(!n){selected=null;return renderInspector()}$('inspectorTitle').textContent='関数設計メモ';$('inspectorSubtitle').textContent='入力内容は自動保存されます';body.innerHTML=`<div class="field"><label for="typeField">ノードの種類</label><select id="typeField"><option value="control" ${n.type==='control'?'selected':''}>制御・解析（青）</option><option value="output" ${n.type==='output'?'selected':''}>出力・変換（緑）</option><option value="state" ${n.type==='state'?'selected':''}>状態管理（紫）</option></select></div>`+foldEditor(n)+FIELDS.map(([key,label,ph])=>fieldControl(key,label,ph,n[key]||'')).join('')+`<div class="section-title">ノードを移動（タッチ操作向け）</div><div class="inspector-actions"><button class="btn" data-move="left">← 左</button><button class="btn" data-move="up">↑ 上</button><button class="btn" data-move="down">↓ 下</button><button class="btn" data-move="right">右 →</button></div><div class="inspector-actions"><button class="btn" id="duplicateNode">複製</button><button class="btn danger" id="deleteNode">削除</button></div><div class="section-title">接続中の関数</div><div class="connections" id="nodeConnections"></div><div class="footer-note">契約：呼び出し元が信頼できる「成功・失敗時の約束」。内部の処理手順をここに書く必要はありません。</div>`;
-bindFoldEditor(n);
-if(n.sourceFile){body.insertAdjacentHTML('beforeend',`<div class="section-title">ソースコード</div><div class="source-meta">${escapeHtml(n.sourceFile)} : ${n.sourceLine||'?'} 行目 ${n.sourceMissing?'（再解析で見つからない定義）':''}</div><button class="btn primary source-open" id="openSourceBtn">⌘ 該当するソースを開く</button><div class="section-title">静的解析の補足</div><div class="v4-muted">${escapeHtml((n.unresolvedCalls||[]).slice(0,12).map(c=>c.target).join('、')||'未解決の呼び出しはありません')}</div>`);}body.querySelectorAll('[data-field]').forEach(el=>el.addEventListener('input',ev=>{n[ev.target.dataset.field]=ev.target.value;scheduleSave();renderNodes()}));$('typeField').onchange=ev=>{n.type=ev.target.value;scheduleSave();renderNodes()};body.querySelectorAll('[data-move]').forEach(b=>b.onclick=()=>{const delta={left:[-55,0],right:[55,0],up:[0,-55],down:[0,55]}[b.dataset.move];n.x=Math.max(0,Math.min(WORLD_W-WIDTH,n.x+delta[0]));n.y=Math.max(0,Math.min(WORLD_H-HEIGHT,n.y+delta[1]));scheduleSave();renderNodes();renderEdges()});$('duplicateNode').onclick=()=>{const copy={...n,id:id(),name:n.name+' copy',generated:false,isStatic:false,foldMode:'off',foldParentId:null,sourceKey:null,sourceFile:null,x:Math.min(WORLD_W-WIDTH,n.x+40),y:Math.min(WORLD_H-HEIGHT,n.y+185)};nodes.push(copy);selected=copy.id;scheduleSave();renderAll();toast('ノードを複製しました')};$('deleteNode').onclick=()=>{if(!confirm('この関数と関連する接続を削除しますか？'))return;edges=edges.filter(e=>e.from!==n.id&&e.to!==n.id);nodes=nodes.filter(x=>x.id!==n.id);for(const child of nodes)if(child.foldParentId===n.id){child.foldMode='off';child.foldParentId=null}selected=null;scheduleSave();renderAll();toast('ノードを削除しました')};$('openSourceBtn')?.addEventListener('click',()=>openSourceView(n.sourceFile,n.sourceLine,n.sourceEnd));const linked=edges.filter(e=>e.from===n.id||e.to===n.id);$('nodeConnections').innerHTML=linked.length?linked.map(e=>`<span class="chip">${e.from===n.id?'→':'←'} ${escapeHtml(nodeById(e.from===n.id?e.to:e.from)?.name||'')}</span>`).join(''):'<span class="help-pill">まだ接続がありません</span>'}
+const n=nodeById(selected);if(!n){selected=null;return renderInspector()}$('inspectorTitle').textContent='関数設計メモ';$('inspectorSubtitle').textContent='入力内容は自動保存されます';body.innerHTML=roleEditor(n)+`<div class="field"><label for="typeField">ノードの種類</label><select id="typeField"><option value="control" ${n.type==='control'?'selected':''}>制御・解析（青）</option><option value="output" ${n.type==='output'?'selected':''}>出力・変換（緑）</option><option value="state" ${n.type==='state'?'selected':''}>状態管理（紫）</option></select></div>`+foldEditor(n)+FIELDS.map(([key,label,ph])=>fieldControl(key,label,ph,n[key]||'')).join('')+`<div class="section-title">ノードを移動（タッチ操作向け）</div><div class="inspector-actions"><button class="btn" data-move="left">← 左</button><button class="btn" data-move="up">↑ 上</button><button class="btn" data-move="down">↓ 下</button><button class="btn" data-move="right">右 →</button></div><div class="inspector-actions"><button class="btn" id="duplicateNode">複製</button><button class="btn danger" id="deleteNode">削除</button></div><div class="section-title">接続中の関数</div><div class="connections" id="nodeConnections"></div><div class="footer-note">契約：呼び出し元が信頼できる「成功・失敗時の約束」。内部の処理手順をここに書く必要はありません。</div>`;
+bindRoleEditor(n);bindFoldEditor(n);
+if(n.sourceFile){body.insertAdjacentHTML('beforeend',`<div class="section-title">ソースコード</div><div class="source-meta">${escapeHtml(n.sourceFile)} : ${n.sourceLine||'?'} 行目 ${n.sourceMissing?'（再解析で見つからない定義）':''}</div><button class="btn primary source-open" id="openSourceBtn">⌘ 該当するソースを開く</button><div class="section-title">静的解析の補足</div><div class="v4-muted">${escapeHtml((n.unresolvedCalls||[]).slice(0,12).map(c=>c.target).join('、')||'未解決の呼び出しはありません')}</div>`);}body.querySelectorAll('[data-field]').forEach(el=>el.addEventListener('input',ev=>{n[ev.target.dataset.field]=ev.target.value;scheduleSave();renderNodes()}));$('typeField').onchange=ev=>{n.type=ev.target.value;scheduleSave();renderNodes()};body.querySelectorAll('[data-move]').forEach(b=>b.onclick=()=>{const delta={left:[-55,0],right:[55,0],up:[0,-55],down:[0,55]}[b.dataset.move];n.x=Math.max(0,n.x+delta[0]);n.y=Math.max(0,n.y+delta[1]);scheduleSave();refreshFoldView();updateWorldBounds();renderNodes();renderEdges()});$('duplicateNode').onclick=()=>{const copy={...n,id:id(),name:n.name+' copy',generated:false,isStatic:false,foldMode:'off',foldParentId:null,sourceKey:null,sourceFile:null,x:n.x+40,y:n.y+185};nodes.push(copy);selected=copy.id;scheduleSave();renderAll();toast('ノードを複製しました')};$('deleteNode').onclick=()=>{if(!confirm('この関数と関連する接続を削除しますか？'))return;edges=edges.filter(e=>e.from!==n.id&&e.to!==n.id);nodes=nodes.filter(x=>x.id!==n.id);for(const child of nodes)if(child.foldParentId===n.id){child.foldMode='off';child.foldParentId=null}selected=null;scheduleSave();renderAll();toast('ノードを削除しました')};$('openSourceBtn')?.addEventListener('click',()=>openSourceView(n.sourceFile,n.sourceLine,n.sourceEnd));const linked=edges.filter(e=>e.from===n.id||e.to===n.id);$('nodeConnections').innerHTML=linked.length?linked.map(e=>`<span class="chip">${e.from===n.id?'→':'←'} ${escapeHtml(nodeById(e.from===n.id?e.to:e.from)?.name||'')}</span>`).join(''):'<span class="help-pill">まだ接続がありません</span>'}
 /* -------- v4.1: two-finger zoom, one-finger canvas pan -------- */
 const touchPointers=new Map();
 let pinchState=null,touchPan=null;
@@ -534,14 +627,26 @@ function finishTouchPointer(e){
 }
 window.addEventListener('pointerup',finishTouchPointer,true);
 window.addEventListener('pointercancel',finishTouchPointer,true);
-function pointerDown(e,nid,el){if(e.button!==0)return;if(e.pointerType==='touch'&&touchPointers.size>1)return;e.stopPropagation();if(connectMode){if(!connectFrom){connectFrom=nid;renderNodes();updateToolbar()}else if(connectFrom!==nid){if(edges.some(x=>x.from===connectFrom&&x.to===nid)){toast('この接続はすでに存在します')}else{edges.push({id:id(),from:connectFrom,to:nid,kind:'call',origin:'manual'});scheduleSave();toast('関数を接続しました')}connectMode=false;connectFrom=null;selected=nid;selectedEdge=null;renderAll()}return}selected=nid;selectedEdge=null;renderAll();const n=nodeById(nid);const startX=e.clientX,startY=e.clientY,ox=n.x,oy=n.y;drag={pointerId:e.pointerId,nid,startX,startY,ox,oy,moved:false};try{$('canvas').setPointerCapture(e.pointerId)}catch(err){}}
-window.addEventListener('pointermove',e=>{if(!drag||e.pointerId!==drag.pointerId)return;const n=nodeById(drag.nid);if(!n)return;const dx=(e.clientX-drag.startX)/zoom,dy=(e.clientY-drag.startY)/zoom;if(Math.abs(dx)+Math.abs(dy)>3)drag.moved=true;n.x=Math.max(0,Math.min(WORLD_W-WIDTH,drag.ox+dx));n.y=Math.max(0,Math.min(WORLD_H-HEIGHT,drag.oy+dy));const el=[...document.querySelectorAll('.node')].find(x=>x.dataset.id===n.id);if(el){el.style.left=n.x+'px';el.style.top=n.y+'px'}renderEdges()});window.addEventListener('pointerup',e=>{if(drag&&e.pointerId===drag.pointerId){if(drag.moved)scheduleSave();drag=null}});
+function pointerDown(e,nid,el){if(e.button!==0)return;if(e.pointerType==='touch'&&touchPointers.size>1)return;e.stopPropagation();if(connectMode){if(!connectFrom){connectFrom=nid;renderNodes();updateToolbar()}else if(connectFrom!==nid){if(edges.some(x=>x.from===connectFrom&&x.to===nid)){toast('この接続はすでに存在します')}else{edges.push({id:id(),from:connectFrom,to:nid,kind:'call',origin:'manual'});scheduleSave();toast('関数を接続しました')}connectMode=false;connectFrom=null;selected=nid;selectedEdge=null;renderAll()}return}const oldEdge=selectedEdge;selected=nid;selectedEdge=null;
+ document.querySelectorAll('#nodeLayer .node.selected').forEach(x=>x.classList.remove('selected'));el.classList.add('selected');
+ if(oldEdge)renderEdges();renderInspector();renderMobile();updateDeleteEdgeButton();
+ const n=nodeById(nid);const startX=e.clientX,startY=e.clientY,ox=n.x,oy=n.y;drag={pointerId:e.pointerId,nid,startX,startY,ox,oy,moved:false};try{$('canvas').setPointerCapture(e.pointerId)}catch(err){}}
+window.addEventListener('pointermove',e=>{if(!drag||e.pointerId!==drag.pointerId||pinchState)return;
+ const n=nodeById(drag.nid);if(!n)return;
+ const dx=(e.clientX-drag.startX)/zoom,dy=(e.clientY-drag.startY)/zoom;
+ if(!drag.moved){if(Math.hypot(e.clientX-drag.startX,e.clientY-drag.startY)<6)return;drag.moved=true}
+ n.x=Math.max(0,drag.ox+dx);n.y=Math.max(0,drag.oy+dy);
+ const el=[...document.querySelectorAll('#nodeLayer .node')].find(x=>x.dataset.id===n.id);
+ if(el){el.style.left=n.x+'px';el.style.top=n.y+'px'}
+ refreshFoldView();updateWorldBounds();renderEdges();
+});window.addEventListener('pointerup',e=>{if(drag&&e.pointerId===drag.pointerId){if(drag.moved)scheduleSave();drag=null}});
 function setZoomAt(z, clientX, clientY, worldAnchor){
  const canvas=$('canvas'),rect=canvas.getBoundingClientRect();
+ if(archMode!=='raw'){zoom=Math.max(.23,Math.min(2.4,z));$('world').style.transform='scale('+zoom+')';updateToolbar();return;}
  const dx=clientX-rect.left,dy=clientY-rect.top;
  const ax=worldAnchor?worldAnchor.x:(canvas.scrollLeft+dx)/zoom;
  const ay=worldAnchor?worldAnchor.y:(canvas.scrollTop+dy)/zoom;
- zoom=Math.max(.40,Math.min(2.4,z));
+ zoom=Math.max(.23,Math.min(2.4,z));
  $('world').style.transform='scale('+zoom+')';
  $('shell').style.width=(parseFloat($('world').style.width||WORLD_W)*zoom)+'px';$('shell').style.height=(parseFloat($('world').style.height||WORLD_H)*zoom)+'px';
  canvas.scrollLeft=ax*zoom-dx;canvas.scrollTop=ay*zoom-dy;
@@ -549,11 +654,12 @@ function setZoomAt(z, clientX, clientY, worldAnchor){
 }
 function setZoom(z){const rect=$('canvas').getBoundingClientRect();setZoomAt(Math.round(z*100)/100,rect.left+rect.width/2,rect.top+rect.height/2)}
 function fit(){
+ if(archMode!=='raw'){const canvas=$('canvas');canvas.scrollLeft=0;canvas.scrollTop=0;return;}
  refreshFoldView();const visible=foldView.roots;if(!visible.length)return;
  const canvas=$('canvas'),minX=Math.min(...visible.map(n=>n.x)),minY=Math.min(...visible.map(n=>n.y));
  const maxX=Math.max(...visible.map(n=>n.x+WIDTH)),maxY=Math.max(...visible.map(n=>n.y+nodeHeight(n)));
  const desired=Math.min(1.05,(canvas.clientWidth-100)/(maxX-minX+80),(canvas.clientHeight-80)/(maxY-minY+80));
- zoom=Math.max(.40,Math.min(1.6,desired));$('world').style.transform=`scale(${zoom})`;
+ zoom=Math.max(.23,Math.min(1.6,desired));$('world').style.transform=`scale(${zoom})`;
  const w=Math.max(WORLD_W,maxX+180),h=Math.max(WORLD_H,maxY+180);$('world').style.width=w+'px';$('world').style.height=h+'px';$('edges').setAttribute('viewBox',`0 0 ${w} ${h}`);$('edges').style.width=w+'px';$('edges').style.height=h+'px';
  $('shell').style.width=(w*zoom)+'px';$('shell').style.height=(h*zoom)+'px';
  canvas.scrollLeft=Math.max(0,(minX-45)*zoom);canvas.scrollTop=Math.max(0,(minY-50)*zoom);updateToolbar();
@@ -588,7 +694,7 @@ $('projectSelect').onchange=e=>switchProject(e.target.value);
 $('newProjectBtn').onclick=()=>{const name=prompt('新しいプロジェクト名を入力してください（例：push_swap）','push_swap');if(name===null)return;const trimmed=name.trim();if(!trimmed){toast('名前を入力してください');return}persist();const p=newProject(trimmed);projects.push(p);switchProject(p.id);toast('新しいプロジェクトを作成しました')};
 $('renameProjectBtn').onclick=()=>{const p=projects.find(p=>p.id===currentProjectId);const name=prompt('プロジェクト名を変更',p.name);if(name===null)return;const trimmed=name.trim();if(!trimmed){toast('名前を入力してください');return}p.name=trimmed;persist();renderProjectSelect();toast('名前を変更しました')};
 $('deleteProjectBtn').onclick=()=>{if(projects.length<=1){alert('最後のプロジェクトは削除できません');return}const p=projects.find(p=>p.id===currentProjectId);if(!confirm('「'+p.name+'」を削除しますか？ このプロジェクトのノードと接続も削除されます。事前にJSON保存してください。'))return;projects=projects.filter(x=>x.id!==currentProjectId);const next=projects[0];currentProjectId=next.id;nodes=next.nodes;edges=next.edges;selected=null;selectedEdge=null;connectMode=false;connectFrom=null;persist();renderProjectSelect();renderAll();setTimeout(fit,30);toast('プロジェクトを削除しました')};
-$('exportBtn').onclick=()=>{const data=JSON.stringify({format:'function-canvas',version:1,nodes,edges},null,2);const blob=new Blob([data],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=(projects.find(p=>p.id===currentProjectId)?.name||'function-canvas').replace(/[^a-zA-Z0-9_-]/g,'_')+'.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('JSONを保存しました')};$('importBtn').onclick=()=>$('importFile').click();$('importFile').onchange=async ev=>{const file=ev.target.files?.[0];if(!file)return;try{const obj=JSON.parse(await file.text());if(!Array.isArray(obj.nodes)||!Array.isArray(obj.edges)||obj.nodes.length>400)throw new Error('JSONの形式が正しくありません');const ids=new Set();for(const n of obj.nodes){if(!n||typeof n.id!=='string'||typeof n.name!=='string'||typeof n.x!=='number'||typeof n.y!=='number'||ids.has(n.id)||!Number.isFinite(n.x)||!Number.isFinite(n.y))throw new Error('ノードの形式が不正です');ids.add(n.id);n.x=Math.max(0,Math.min(WORLD_W-WIDTH,n.x));n.y=Math.max(0,Math.min(WORLD_H-HEIGHT,n.y));n.type=['control','output','state'].includes(n.type)?n.type:'control'}nodes=obj.nodes;edges=obj.edges.filter(e=>e&&ids.has(e.from)&&ids.has(e.to)&&e.from!==e.to).map(e=>({id:typeof e.id==='string'?e.id:id(),from:e.from,to:e.to,kind:e.kind==='state'?'state':'call'}));selected=null;selectedEdge=null;connectMode=false;connectFrom=null;persist();renderAll();setTimeout(fit,30);toast('JSONを読み込みました')}catch(err){alert('読み込めませんでした：'+err.message)}ev.target.value=''};$('resetBtn').onclick=()=>{if(!confirm('現在のプロジェクトのマップをft_printfのサンプルに戻しますか？'))return;const s=sample();nodes=s.nodes;edges=s.edges;selected=null;selectedEdge=null;connectMode=false;connectFrom=null;persist();renderAll();setTimeout(fit,30)};
+$('exportBtn').onclick=()=>{const data=JSON.stringify({format:'function-canvas',version:5,nodes,edges,language:currentProject()?.language||'c',sources:currentProject()?.sources||[],archMode,archGroup},null,2);const blob=new Blob([data],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=(projects.find(p=>p.id===currentProjectId)?.name||'function-canvas').replace(/[^a-zA-Z0-9_-]/g,'_')+'.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('JSONを保存しました')};$('importBtn').onclick=()=>$('importFile').click();$('importFile').onchange=async ev=>{const file=ev.target.files?.[0];if(!file)return;try{const obj=JSON.parse(await file.text());if(!Array.isArray(obj.nodes)||!Array.isArray(obj.edges)||obj.nodes.length>400)throw new Error('JSONの形式が正しくありません');const ids=new Set();for(const n of obj.nodes){if(!n||typeof n.id!=='string'||typeof n.name!=='string'||typeof n.x!=='number'||typeof n.y!=='number'||ids.has(n.id)||!Number.isFinite(n.x)||!Number.isFinite(n.y))throw new Error('ノードの形式が不正です');ids.add(n.id);n.x=Math.max(0,n.x);n.y=Math.max(0,n.y);n.type=['control','output','state'].includes(n.type)?n.type:'control'}nodes=obj.nodes;edges=obj.edges.filter(e=>e&&ids.has(e.from)&&ids.has(e.to)&&e.from!==e.to).map(e=>({...e,id:typeof e.id==='string'?e.id:id(),from:e.from,to:e.to,kind:e.kind==='state'?'state':'call'}));const p=currentProject();if(p){p.sources=Array.isArray(obj.sources)?obj.sources:[];p.language=obj.language==='py'?'py':'c';archMode=obj.archMode||'overview';archGroup=obj.archGroup||'sort';p.archMode=archMode;p.archGroup=archGroup;const l=$('languageSelect');if(l)l.value=p.language;}selected=null;selectedEdge=null;connectMode=false;connectFrom=null;persist();renderAll();setTimeout(fit,30);toast('JSONを読み込みました')}catch(err){alert('読み込めませんでした：'+err.message)}ev.target.value=''};$('resetBtn').onclick=()=>{if(!confirm('現在のプロジェクトのマップをft_printfのサンプルに戻しますか？'))return;const s=sample();nodes=s.nodes;edges=s.edges;selected=null;selectedEdge=null;connectMode=false;connectFrom=null;persist();renderAll();setTimeout(fit,30)};
 $('canvas').addEventListener('click',e=>{if(Date.now()<window._fcIgnoreEdgeClickUntil)return;if(e.target===$('canvas')||e.target===$('world')||e.target===$('shell')||e.target===$('nodeLayer')||e.target===$('edges')){selected=null;selectedEdge=null;renderAll()}});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&connectMode){connectMode=false;connectFrom=null;renderAll()}if((e.key==='Delete'||e.key==='Backspace')&&selectedEdge&&!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)){edges=edges.filter(x=>x.id!==selectedEdge);selectedEdge=null;scheduleSave();renderAll()}});
 
 /* -------- v3: project overview -------- */
@@ -639,7 +745,7 @@ function renderSearchResults(){
   box.innerHTML=results.length?results.slice(0,40).map(n=>`<button class="search-item" data-result="${escapeHtml(n.id)}"><strong>${escapeHtml(n.name)}</strong><span>${escapeHtml(n.responsibility||n.contract||'責務未設定')}</span></button>`).join(''):'<div class="search-empty">該当する関数はありません</div>';
 }
 function focusNode(nid){
-  const n=nodeById(nid);if(!n)return;
+  const n=nodeById(nid);if(!n)return;archMode='raw';const p=currentProject();if(p)p.archMode='raw';
   const visibleId=expandAncestors(nid);preventFoldOverlaps();const visible=nodeById(visibleId)||n;
   hideHome();$('analysisOverlay').hidden=true;
   searchQuery='';$('nodeSearch').value='';renderSearchResults();
@@ -828,6 +934,32 @@ function calculateStaging(parsed,project){
  const stale=nodes.filter(n=>n.sourceKey&&!currentKeys.has(n.sourceKey)).length;
  return {fresh,updated,stale};
 }
+async function readTarGz(file,accept){
+ if(!('DecompressionStream' in window))throw new Error('このブラウザはtar.gzの展開に対応していません。ZIPに変換してください');
+ if(file.size>8*1024*1024)throw new Error('圧縮ファイルは8MB以下にしてください');
+ const stream=file.stream().pipeThrough(new DecompressionStream('gzip'));
+ const buffer=await new Response(stream).arrayBuffer();
+ if(buffer.byteLength>8*1024*1024)throw new Error('展開後のアーカイブが8MBを超えています');
+ const bytes=new Uint8Array(buffer),decoder=new TextDecoder('utf-8'),headers=new TextDecoder('latin1');
+ const read=(start,len)=>decoder.decode(bytes.slice(start,start+len)).replace(/\0.*$/s,'').trim();
+ const ascii=(start,len)=>headers.decode(bytes.slice(start,start+len)).replace(/\0.*$/s,'').trim();
+ let offset=0,entries=0;
+ while(offset+512<=bytes.length){
+  const header=offset,name=read(header,100),prefix=read(header+345,155),type=bytes[header+156];
+  if(!name)break;
+  const rawSize=ascii(header+124,12);if(!/^[0-7 ]+$/.test(rawSize))throw new Error('tarヘッダーのサイズが不正です');
+  const size=parseInt(rawSize,8)||0;
+  const start=offset+512,end=start+size;
+  if(!Number.isSafeInteger(end)||end>bytes.length)throw new Error('tarファイルのサイズが不正です');
+  const path=(prefix?prefix+'/':'')+name;
+  if((type===0||type===48)&&/\.(?:c|h|py)$/i.test(path)){
+   if(size>400000)throw new Error(path+' が大きすぎます');
+   accept(path,decoder.decode(bytes.slice(start,end)));
+   if(++entries>150)throw new Error('ファイルは最大150個までです');
+  }
+  offset=start+Math.ceil(size/512)*512;
+ }
+}
 async function readSourceSelection(inputFiles,language){
  const chosen=new Map(),warnings=[];
  let total=0;
@@ -851,6 +983,8 @@ async function readSourceSelection(inputFiles,language){
        if(item._data?.uncompressedSize>400000)throw new Error(item.name+' が大きすぎます');
        insert(item.name,await item.async('string'));
      }
+   }else if(/\.(?:tar\.gz|tgz)$/i.test(file.name)){
+     await readTarGz(file,insert);
    }else if(isValid(file.name))insert(file.webkitRelativePath||file.name,await file.text());
    else warnings.push(file.name+' は選択中の言語に対応していません');
  }
@@ -959,7 +1093,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeStage();$('sou
 // V3 backups and projects are still accepted: keep the original storage key.
 $('exportBtn').onclick=()=>{
  persist();const p=ensureProject(currentProject());
- downloadJSON({format:'function-canvas',version:4,language:p.language,sources:p.sources,nodes,edges},p.name.replace(/[^A-Za-z0-9_-]/g,'_')+'.json');
+ downloadJSON({format:'function-canvas',version:5,language:p.language,sources:p.sources,nodes,edges,archMode,archGroup},p.name.replace(/[^A-Za-z0-9_-]/g,'_')+'.json');
  toast('このプロジェクトをJSONに保存しました');
 };
 $('importFile').onchange=async event=>{
@@ -969,13 +1103,13 @@ $('importFile').onchange=async event=>{
    if(!Array.isArray(data.nodes)||!Array.isArray(data.edges)||data.nodes.length>400)throw new Error('ノード形式が不正です');
    const ids=new Set();for(const n of data.nodes){
      if(typeof n.id!=='string'||typeof n.name!=='string'||!Number.isFinite(n.x)||!Number.isFinite(n.y)||ids.has(n.id))throw new Error('ノードが不正です');
-     ids.add(n.id);n.x=Math.max(0,Math.min(WORLD_W-WIDTH,n.x));n.y=Math.max(0,Math.min(WORLD_H-HEIGHT,n.y));
+     ids.add(n.id);n.x=Math.max(0,n.x);n.y=Math.max(0,n.y);
    }
    if(!confirm('現在のプロジェクトをJSONの内容で置き換えますか？（先にバックアップをおすすめします）'))return;
    const p=ensureProject(currentProject());p.language=['c','py'].includes(data.language)?data.language:p.language;
    p.sources=Array.isArray(data.sources)?data.sources.filter(s=>typeof s.path==='string'&&typeof s.text==='string').slice(0,150):[];
    nodes=data.nodes;edges=data.edges.filter(e=>e&&ids.has(e.from)&&ids.has(e.to)).map(e=>({...e,origin:e.origin==='auto'?'auto':'manual',kind:e.kind==='state'?'state':'call'}));
-   $('languageSelect').value=p.language;selected=null;selectedEdge=null;migrateStaticMetadata(p);persist();renderAll();updateUnresolvedCount();setTimeout(fit,50);toast('プロジェクトを復元しました');
+   archMode=['overview','group','focus','raw'].includes(data.archMode)?data.archMode:'overview';archGroup=FCClassifier.GROUPS.some(g=>g.id===data.archGroup)?data.archGroup:'sort';archFocusId=null;p.archMode=archMode;p.archGroup=archGroup;$('languageSelect').value=p.language;selected=null;selectedEdge=null;migrateStaticMetadata(p);persist();renderAll();updateUnresolvedCount();if(archMode==='raw')setTimeout(fit,50);toast('プロジェクトを復元しました');
  }catch(err){alert('読み込み失敗：'+err.message)}finally{event.target.value=''}
 };
 
@@ -1067,7 +1201,109 @@ window.addEventListener('pointerup',e=>{
  renderAll();updateUnresolvedCount();
 },true);
 
-load();const active=projects.find(p=>p.id===currentProjectId);if(active){if(!active.language)active.language="c";if(!Array.isArray(active.sources))active.sources=[];$("languageSelect").value=active.language;migrateStaticMetadata(active);}renderAll();updateUnresolvedCount();setZoom(.8);setTimeout(fit,120);showHome();
+/* -------- v5 architecture navigator: visual projection of the source graph -------- */
+let archMode='overview',archGroup='sort',archFocusId=null,archHop=1;
+const groupMeta=id=>FCClassifier.GROUPS.find(x=>x.id===id)||FCClassifier.GROUPS.at(-1);
+const groupFor=n=>FCClassifier.classification(n).group;
+function showArchitecture(mode='overview',group=null){
+ archMode=mode;if(group)archGroup=group;if(mode!=='focus')archFocusId=null;
+ const p=currentProject();if(p){p.archMode=mode;p.archGroup=archGroup;scheduleSave()}
+ selectedEdge=null;renderAll();if(archMode!=='raw')$('canvas').scrollTo(0,0);else setTimeout(fit,30);
+}
+function archSummary(){
+ const groups=FCClassifier.members(nodes),rels=FCClassifier.groupRelations(nodes,edges);
+ const count=nodes.filter(n=>!n.sourceMissing).length;
+ const sourceCount=currentProject()?.sources?.length||0;
+ return `<div class="arch-overview-head"><div><span class="arch-eyebrow">PROJECT ARCHITECTURE / 推定ビュー</span><h2>${escapeHtml(currentProject()?.name||'Project')} <span>機能マップ</span></h2><p>最初は機能だけ。グループを開くと主要関数、さらに開くと補助関数へ進めます。分類は名前・ファイル名からの推定で、いつでも変更できます。</p></div><div class="arch-metrics"><span><strong>${count}</strong> 関数</span><span><strong>${sourceCount}</strong> ファイル</span><span><strong>${rels.length}</strong> グループ間の関係</span></div></div>
+ <div class="arch-overview-grid" id="archOverviewGrid"><svg class="arch-connectors" id="archOverviewWires" aria-hidden="true"></svg>
+ ${FCClassifier.GROUPS.filter(g=>(groups.get(g.id)||[]).length).map(g=>{
+  const items=groups.get(g.id),confirmed=items.filter(n=>n.roleOverride).length,unresolved=items.filter(n=>!n.roleOverride&&FCClassifier.classification(n).confidence==='低').length;
+  const outward=rels.filter(r=>r.from===g.id).reduce((s,r)=>s+r.count,0);
+  return `<button class="arch-group-card" data-arch-group="${g.id}" style="--group-color:${g.color}" type="button"><div class="arch-group-top"><span class="arch-group-symbol">${g.icon}</span><span class="arch-group-count">${items.length} functions</span></div><h3>${escapeHtml(g.label)}</h3><p>${escapeHtml(g.desc)}</p><div class="arch-group-functions">${items.slice(0,4).map(n=>`<span>${escapeHtml(n.name)}</span>`).join('')}${items.length>4?`<span>ほか ${items.length-4} 件</span>`:''}</div><div class="arch-group-footer"><span>外部への呼び出し ${outward} 件</span><span>${confirmed} 手動確定${unresolved?' · '+unresolved+' 要確認':''}</span></div></button>`
+ }).join('')}</div><div class="arch-help">線は「グループをまたぐ関数呼び出し」の集約表示です。同じグループ間の複数呼び出しは1本にまとめます。実際の関数間接続は保持されます。</div>`;
+}
+function archRelevantIds(){
+ const selectedRoots=foldView.roots.filter(n=>groupFor(n)===archGroup),allIds=new Set(selectedRoots.map(n=>n.id));
+ if(archMode!=='focus'||!archFocusId)return allIds;
+ const seed=foldRoot(archFocusId),keep=new Set([seed]),queue=[[seed,0]];
+ while(queue.length){const [current,d]=queue.shift();if(d>=archHop)continue;
+  for(const e of edges){if(e.kind==='state')continue;
+   const a=foldRoot(e.from),b=foldRoot(e.to),other=a===current?b:b===current?a:null;
+   if(other&&allIds.has(other)&&!keep.has(other)){keep.add(other);queue.push([other,d+1])}
+  }
+ }
+ return keep;
+}
+function archFunctionCard(n){
+ const c=FCClassifier.classification(n),children=foldView.children.get(n.id)||[],selectedClass=selected===n.id?' arch-node-selected':'',related=edges.filter(e=>e.from===n.id&&e.kind!=='state');
+ return `<article class="arch-function-card${selectedClass}" data-arch-function="${escapeHtml(n.id)}" style="--group-color:${groupMeta(c.group).color}" tabindex="0" role="button" aria-label="${escapeHtml(n.name)} の詳細を表示"><div class="arch-function-name">${escapeHtml(n.name||'無名関数')} ${n.isStatic?'<span class="arch-static">static</span>':''}</div><div class="arch-function-details">${escapeHtml(n.responsibility||n.roleSuggested||'設計メモで責務を確認できます')}</div><div class="arch-function-footer"><span>${escapeHtml(n.sourceFile?.split('/').pop()||'手動')}</span><span>呼び出し ${related.length}</span></div>
+ ${children.length?`<div class="arch-fold"><button class="arch-fold-toggle" data-arch-fold="${escapeHtml(n.id)}" aria-expanded="${!!n.foldExpanded}">${n.foldExpanded?'▾':'▸'} 内部補助関数 ${children.length}件</button>${n.foldExpanded?`<div class="arch-fold-list">${nestedRowsHTML(n.id)}</div>`:''}</div>`:''}
+ </article>`;
+}
+function archDetail(){
+ const group=groupMeta(archGroup),idSet=archRelevantIds();
+ const items=foldView.roots.filter(n=>idSet.has(n.id));
+ const links=aggregatedEdges().filter(e=>idSet.has(e.from)&&idSet.has(e.to)&&e.kind!=='state');
+ const layers=FCClassifier.layoutLayers(items,links);
+ const externals=new Map();for(const e of edges){if(e.kind==='state')continue;const src=nodeById(e.from),dst=nodeById(e.to);if(!src||!dst)continue;const a=groupFor(src),b=groupFor(dst);
+  if(a===archGroup&&b!==archGroup){externals.set(b,(externals.get(b)||0)+1)}
+ }
+ const focusNodeObj=archFocusId?nodeById(archFocusId):null;
+ return `<div class="arch-detail-head"><div class="arch-breadcrumb"><button data-arch-back>⌂ 全体</button><span>›</span><strong>${escapeHtml(group.label)}</strong></div><div class="arch-detail-heading"><span class="arch-big-icon" style="color:${group.color}">${group.icon}</span><div><h2>${escapeHtml(group.label)}</h2><p>${escapeHtml(group.desc)}。関数をクリックすると右側で分類や設計メモを編集できます。</p></div></div><div class="arch-detail-actions"><button class="btn ${archMode==='group'?'primary':''}" data-arch-grouponly>関数全体</button><button class="btn ${archMode==='focus'?'primary':''}" data-arch-focus ${!selected&&!archFocusId?'disabled':''}>選択関数に集中</button>${archMode==='focus'?`<label>前後<select id="archHops"><option value="1" ${archHop===1?'selected':''}>1段階</option><option value="2" ${archHop===2?'selected':''}>2段階</option></select></label>`:''}</div></div>
+ ${archMode==='focus'?`<div class="arch-help">${escapeHtml(focusNodeObj?.name||'選択関数')} を中心に、同じグループ内の呼び出しを表示中。共通関数は複製せず、依存線で結びます。</div>`:''}
+ ${!items.length?'<div class="arch-empty">表示できる関数がありません。関数全体に戻してください。</div>':`<div class="arch-flow-scroll"><div class="arch-flow" id="archFlow"><svg class="arch-connectors" id="archFunctionWires" aria-hidden="true"></svg>${layers.map(([lev,arr])=>`<section class="arch-lane"><div class="arch-lane-title">${lev===0?'入口・制御':'呼び出し先 '+lev}</div>${arr.map(n=>archFunctionCard(n)).join('')}</section>`).join('')}</div></div>`}
+ <div class="arch-external"><h3>他グループへの依存（${[...externals.values()].reduce((a,b)=>a+b,0)}件）</h3>${externals.size?`<div class="arch-external-pills">${[...externals].map(([id,count])=>`<button data-arch-group="${id}">${escapeHtml(groupMeta(id).label)} <b>${count}</b></button>`).join('')}</div>`:'<p>このグループから他グループへの直接呼び出しはありません。</p>'}<p>この画面では外部への矢印を集約しています。全接続の編集は「通常キャンバス」へ。</p></div>`;
+}
+function archWire(svg,from,to,label){
+ if(!from||!to)return;const parent=svg.parentElement,box=parent.getBoundingClientRect(),a=from.getBoundingClientRect(),b=to.getBoundingClientRect();
+ const aCenter={x:a.left+a.width/2-box.left,y:a.top+a.height/2-box.top},bCenter={x:b.left+b.width/2-box.left,y:b.top+b.height/2-box.top};
+ let x1=aCenter.x,y1=aCenter.y,x2=bCenter.x,y2=bCenter.y;
+ if(Math.abs(x2-x1)>Math.abs(y2-y1)*.65){x1=aCenter.x+(x2>x1?a.width/2:-a.width/2);x2=bCenter.x-(x2>x1?b.width/2:-b.width/2)}
+ else{y1=aCenter.y+(y2>y1?a.height/2:-a.height/2);y2=bCenter.y-(y2>y1?b.height/2:-b.height/2)}
+ const ns='http://www.w3.org/2000/svg',path=document.createElementNS(ns,'path');
+ path.setAttribute('d',`M ${x1} ${y1} C ${x1+(x2-x1)*.46} ${y1}, ${x2-(x2-x1)*.46} ${y2}, ${x2} ${y2}`);
+ path.setAttribute('class','arch-wire');path.setAttribute('marker-end','url(#archArrow)');
+ const title=document.createElementNS(ns,'title');title.textContent=label;path.appendChild(title);svg.appendChild(path);
+}
+function drawArchitectureWires(){
+ if(archMode==='raw')return;
+ const sel=archMode==='overview'?'archOverviewWires':'archFunctionWires',svg=$(sel);if(!svg)return;
+ const parent=svg.parentElement;svg.setAttribute('width',parent.scrollWidth);svg.setAttribute('height',parent.scrollHeight);
+ svg.innerHTML='<defs><marker id="archArrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#9aa9bd"/></marker></defs>';
+ if(archMode==='overview'){
+  for(const e of FCClassifier.groupRelations(nodes,edges))archWire(svg,parent.querySelector(`[data-arch-group="${e.from}"]`),parent.querySelector(`[data-arch-group="${e.to}"]`),e.count+'件の関数呼び出し');
+ }else{
+  const ids=archRelevantIds();for(const e of aggregatedEdges())if(e.kind!=='state'&&ids.has(e.from)&&ids.has(e.to))archWire(svg,parent.querySelector(`[data-arch-function="${CSS.escape(e.from)}"]`),parent.querySelector(`[data-arch-function="${CSS.escape(e.to)}"]`),e.links.length+'件の呼び出し');
+ }
+}
+let archDrawQueue=false;
+function renderArchitecture(){
+ const board=$('archBoard');if(!board)return;
+ const raw=archMode==='raw';board.hidden=raw;$('shell').hidden=!raw;
+ $('archOverviewBtn').classList.toggle('active',archMode==='overview');$('archRawBtn').classList.toggle('active',raw);
+ $('archNavLabel').textContent=raw?'通常キャンバス':archMode==='overview'?'機能マップ':groupMeta(archGroup).label;
+ $('legendStrip')?.classList.toggle('arch-hidden',!raw);$('hint')?.classList.toggle('arch-hidden',!raw);$('mobileControls')?.classList.toggle('arch-hidden',!raw);$('zoomLabel')?.closest('.toolbar-group')?.classList.toggle('arch-hidden',!raw);
+ if(raw){return}
+ board.innerHTML=archMode==='overview'?archSummary():archDetail();
+ if(!archDrawQueue){archDrawQueue=true;requestAnimationFrame(()=>{archDrawQueue=false;drawArchitectureWires()})}
+}
+$('archBoard').addEventListener('click',e=>{
+ const btn=e.target.closest('[data-arch-group],[data-arch-back],[data-arch-grouponly],[data-arch-focus],[data-arch-fold],[data-fold-toggle],[data-fold-child],[data-arch-function]');if(!btn)return;
+ e.stopPropagation();
+ if(btn.hasAttribute('data-arch-group')){showArchitecture('group',btn.dataset.archGroup);return}
+ if(btn.hasAttribute('data-arch-back')){showArchitecture('overview');return}
+ if(btn.hasAttribute('data-arch-grouponly')){showArchitecture('group');return}
+ if(btn.hasAttribute('data-arch-focus')){if(selected||archFocusId){archFocusId=selected||archFocusId;showArchitecture('focus')}return}
+ if(btn.hasAttribute('data-arch-fold')||btn.hasAttribute('data-fold-toggle')){const nid=btn.dataset.archFold||btn.dataset.foldToggle,n=nodeById(nid);if(n){n.foldExpanded=!n.foldExpanded;scheduleSave();renderArchitecture()}return}
+ if(btn.hasAttribute('data-fold-child')){const n=nodeById(btn.dataset.foldChild);if(n){selected=n.id;selectedEdge=null;renderInspector();renderArchitecture()}return}
+ if(btn.hasAttribute('data-arch-function')){const n=nodeById(btn.dataset.archFunction);if(n){selected=n.id;selectedEdge=null;renderInspector();renderArchitecture()}return}
+});
+$('archBoard').addEventListener('change',e=>{if(e.target.id==='archHops'){archHop=Number(e.target.value)||1;renderArchitecture()}});
+$('archOverviewBtn').onclick=()=>showArchitecture('overview');
+$('archRawBtn').onclick=()=>showArchitecture('raw');
+window.addEventListener('resize',()=>{if(archMode!=='raw')drawArchitectureWires()});
+
+load();const active=projects.find(p=>p.id===currentProjectId);if(active){archMode=active.archMode||'overview';archGroup=active.archGroup||'sort';if(!active.language)active.language="c";if(!Array.isArray(active.sources))active.sources=[];$("languageSelect").value=active.language;migrateStaticMetadata(active);}renderAll();updateUnresolvedCount();setZoom(.8);if(archMode==='raw')setTimeout(fit,120);showHome();
 })();
 
 
