@@ -1,0 +1,744 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover" />
+<title>Function Canvas — 関数設計マップ</title>
+<link rel="manifest" href="./manifest.webmanifest" />
+<link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+<meta name="description" content="42課題の関数設計と依存関係を管理するワークスペース" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="Function Canvas" />
+<meta name="theme-color" content="#ffffff" />
+<style>
+:root{--bg:#f5f7fb;--panel:#fff;--ink:#1a2940;--muted:#708097;--line:#dce4ee;--blue:#356dd8;--bluebg:#e9f1ff;--purple:#8559c5;--purplebg:#f2ebfc;--green:#16836f;--greenbg:#e7f7f0;--shadow:0 8px 30px rgba(28,45,71,.08)}
+*{box-sizing:border-box}body{margin:0;font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Noto Sans JP",Meiryo,sans-serif;background:var(--bg);color:var(--ink)}button,input,textarea,select{font:inherit}button{cursor:pointer}button:disabled{cursor:default;opacity:.5}header{height:76px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:16px;padding:0 24px;justify-content:space-between}header .brand{display:flex;align-items:center;gap:12px;min-width:0}.logo{background:#1c355c;color:#fff;border-radius:13px;width:42px;height:42px;display:grid;place-items:center;font-weight:800;font-size:24px}.brand h1{font-size:18px;margin:0;letter-spacing:-.02em}.brand p{font-size:12px;color:var(--muted);margin:4px 0 0}.header-actions,.toolbar-group{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.btn{border:1px solid var(--line);background:#fff;color:#263650;padding:9px 13px;border-radius:9px;font-size:12px;font-weight:700;white-space:nowrap}.btn:hover{border-color:#9db6e8;background:#f7faff}.btn.primary{background:#2c65d0;border-color:#2c65d0;color:white}.btn.primary:hover{background:#2057be}.btn.active{background:#fff4db;border-color:#edb750;color:#785219}.btn.danger{color:#b13c48}.btn.ghost{background:transparent}.btn.small{padding:6px 9px}.app{height:calc(100vh - 76px);display:grid;grid-template-columns:minmax(0,1fr) 365px}.main{min-width:0;display:flex;flex-direction:column}.toolbar{background:#fff;border-bottom:1px solid var(--line);padding:10px 16px;display:flex;justify-content:space-between;gap:10px;align-items:center}.canvas-wrap{flex:1;position:relative;overflow:auto;background-color:#f7f9fc;background-image:radial-gradient(#d6dfea 1px,transparent 1px);background-size:20px 20px;scrollbar-color:#c2cedd transparent}.canvas-hint{position:sticky;top:12px;left:14px;z-index:4;pointer-events:none;display:inline-block;background:rgba(255,255,255,.94);border:1px solid #e4e9f1;border-radius:8px;padding:8px 12px;font-size:12px;color:#65768c;box-shadow:0 3px 12px #1d2d4711}.world-shell{position:relative;min-width:100%;min-height:100%}.world{position:absolute;left:0;top:0;width:2600px;height:1900px;transform-origin:top left}.edges{position:absolute;left:0;top:0;width:2600px;height:1900px;overflow:visible;pointer-events:none}.edge-group{pointer-events:visibleStroke;cursor:pointer}.edge-path{fill:none;stroke:#8798ac;stroke-width:2.2;pointer-events:none}.edge-group.selected .edge-path{stroke:#d78719;stroke-width:3}.edge-group.kind-state .edge-path{stroke:var(--purple);stroke-dasharray:7 6}.edge-hit{stroke:transparent;stroke-width:18;fill:none;pointer-events:stroke}.node{position:absolute;width:266px;min-height:136px;border:1px solid #b7cbe9;border-radius:12px;background:#fff;box-shadow:0 5px 20px rgba(19,48,88,.09);cursor:grab;user-select:none;overflow:hidden}.node:active{cursor:grabbing}.node.selected{outline:3px solid #74a3ff;outline-offset:2px}.node.connect-origin{outline:3px solid #e3ab45;outline-offset:2px}.node.type-control{border-top:5px solid #5489e8}.node.type-output{border-top:5px solid #43ab7e}.node.type-state{border-top:5px solid #a47ad8}.node-head{padding:12px 14px 6px;display:flex;align-items:center;gap:7px}.node-name{font-size:15px;font-weight:800;line-height:1.3;overflow-wrap:anywhere}.node-type{margin-left:auto;color:#60738d;background:#edf2f9;padding:3px 7px;font-size:10px;border-radius:5px;white-space:nowrap}.node.type-output .node-type{color:var(--green);background:var(--greenbg)}.node.type-state .node-type{color:var(--purple);background:var(--purplebg)}.node-body{padding:4px 14px 13px;line-height:1.55}.node-resp{font-size:12px;color:#40516c;white-space:pre-wrap;overflow-wrap:anywhere;max-height:66px;overflow:hidden}.node-input{font-size:11px;color:#8090a3;border-top:1px solid #ecf0f5;margin-top:9px;padding-top:7px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.inspector{min-height:0;background:#fff;border-left:1px solid var(--line);display:flex;flex-direction:column}.inspector-head{padding:19px 22px 15px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}.inspector-head h2{margin:0;font-size:17px}.inspector-head p{margin:6px 0 0;color:var(--muted);font-size:12px}.inspector-body{padding:17px 22px 30px;overflow:auto;flex:1}.field{margin-bottom:15px}.field label{display:block;font-size:12px;font-weight:750;color:#3d4d65;margin-bottom:7px}.field input,.field textarea,.field select{width:100%;border:1px solid #d5deeb;border-radius:8px;background:#fff;padding:10px 11px;color:#25344b;outline:none;font-size:13px}.field textarea{resize:vertical;min-height:64px;line-height:1.5}.field input:focus,.field textarea:focus,.field select:focus{border-color:#5289e8;box-shadow:0 0 0 3px #5289e81c}.field-help{font-size:11px;color:#8695a8;margin-top:5px}.inspector-actions{display:flex;gap:7px;padding-top:5px}.empty{padding:44px 20px;text-align:center;color:#8594a8;font-size:13px;line-height:1.8}.empty .em{font-size:32px;display:block;margin-bottom:10px}.section-title{font-size:12px;font-weight:800;color:#6e7e95;margin:20px 0 10px;border-top:1px solid var(--line);padding-top:15px}.connections{display:flex;gap:7px;flex-wrap:wrap}.chip{background:#f0f4fa;border:1px solid #e1e8f1;border-radius:7px;padding:6px 8px;font-size:11px;color:#50647e}.status{position:fixed;bottom:18px;left:20px;background:#1c344f;color:white;padding:10px 14px;border-radius:9px;box-shadow:var(--shadow);font-size:12px;opacity:0;transform:translateY(7px);transition:.2s;pointer-events:none;z-index:20}.status.show{opacity:1;transform:translateY(0)}.help-pill{font-size:11px;color:#8291a6}.file-input{display:none}.footer-note{margin-top:18px;font-size:11px;line-height:1.6;color:#8b98a9}kbd{font-size:10px;border:1px solid #d6dfec;padding:2px 5px;border-radius:4px;background:#f4f7fa;color:#63748b}@media(max-width:900px){header{height:auto;min-height:72px;padding:12px 14px;flex-wrap:wrap}.app{height:calc(100vh - 116px);grid-template-columns:minmax(0,1fr) 310px}.brand p{display:none}}@media(max-width:680px){header{gap:9px}.brand h1{font-size:15px}.app{height:auto;display:flex;flex-direction:column}.main{height:58vh;min-height:430px}.inspector{border-left:none;border-top:1px solid var(--line);min-height:380px}.inspector-body{max-height:none}.toolbar{flex-wrap:wrap}.btn{font-size:11px;padding:8px 9px}}
+
+/* iPad: keep controls accessible without precision dragging */
+.mobile-controls{display:flex;flex-wrap:wrap;align-items:end;gap:9px;background:#eef4ff;padding:10px 14px;border-bottom:1px solid #d3e1f5}
+.mobile-controls label{font-size:12px;font-weight:700;display:flex;flex-direction:column;gap:4px;flex:1 1 145px}
+.mobile-controls select{font-size:16px;border:1px solid #c4d3e9;border-radius:9px;background:#fff;padding:9px;width:100%;max-width:100%}
+.mobile-controls .btn{min-height:42px;font-size:13px}
+.node{touch-action:none;-webkit-user-select:none}
+.canvas-wrap{overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+@media(max-width:900px){.main{min-height:470px}.mobile-controls{padding:9px}.inspector-body{padding:14px}.btn{min-height:39px}}
+@media(max-width:680px){.main{height:62vh;min-height:510px}.inspector{min-height:380px}.canvas-hint{font-size:11px}}
+.project-switcher{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:5px 8px;border:1px solid var(--line);border-radius:10px;background:#f7f9fc}.project-switcher label{font-size:12px;color:#60738d;font-weight:700}.project-switcher select{max-width:180px;min-width:120px;padding:8px;border:1px solid #d4dfec;border-radius:7px;background:white;color:#25344b}.project-switcher .btn{padding:7px 9px}@media(max-width:700px){.project-switcher{width:100%;order:3}.project-switcher select{flex:1;max-width:none}}
+
+/* v3: fixed workspace chrome, project dashboard, node search and dependency insights */
+:root {--navy:#173250;--accent:#316be3;--soft:#eef4ff}
+html,body{height:100%;margin:0}
+body{height:100vh;height:100dvh;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+header{position:relative;z-index:30;flex:0 0 auto;height:auto;min-height:70px;padding:9px 16px;gap:10px;box-shadow:0 2px 14px #1732500b}
+.app{height:auto!important;flex:1;min-height:0;overflow:hidden;grid-template-columns:minmax(0,1fr) 352px}
+.main{min-width:0;min-height:0!important;height:auto!important;overflow:hidden;flex:1}
+.toolbar{position:relative;flex:0 0 auto;z-index:15;display:flex;flex-wrap:wrap;gap:8px;min-height:58px;padding:9px 12px}
+.mobile-controls{flex:0 0 auto}
+.canvas-wrap{min-height:0;flex:1;overflow:auto}
+.inspector{min-height:0!important;overflow:hidden}
+.inspector-body{min-height:0;overflow:auto}
+.btn{min-height:35px}
+.home-link{color:var(--accent);border-color:#d5e3ff;background:#edf3ff}
+.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.searchbox{position:relative;flex:1 1 200px;max-width:330px;min-width:160px;z-index:40}
+.searchbox input,.home-actions input{width:100%;height:38px;border:1px solid #d6e1f1;border-radius:10px;background:#f8faff;color:#213850;font-size:13px;padding:9px 32px 9px 12px;outline:none}
+.searchbox input:focus,.home-actions input:focus{border-color:#6998ee;box-shadow:0 0 0 3px #4787e71c}
+.search-clear{position:absolute;right:5px;top:4px;border:0;background:transparent;color:#637e9a;font-size:20px;width:28px;height:30px;cursor:pointer}
+.search-results{position:absolute;left:0;right:0;top:calc(100% + 5px);max-height:min(350px,55dvh);overflow:auto;background:white;border:1px solid #ccdaed;border-radius:12px;box-shadow:0 18px 36px #192e4f30;padding:7px;z-index:60}
+.search-results[hidden]{display:none}
+.search-item{display:block;width:100%;text-align:left;border:none;border-radius:8px;background:white;padding:10px;color:#263b55;cursor:pointer}
+.search-item:hover,.search-item:focus-visible{background:#eff5ff}
+.search-item strong{display:block;font-size:13px}.search-item span{display:block;font-size:11px;color:#6e8098;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.search-empty{font-size:12px;padding:14px;color:#73839a}
+.node.search-dim{opacity:.2}.node.search-hit{box-shadow:0 0 0 3px #ffd36d,0 5px 20px #19305818}
+.home-screen[hidden],.analysis-overlay[hidden]{display:none!important}
+body.is-home .app{display:none!important}
+.home-screen{min-height:0;flex:1;overflow-y:auto;background:#f5f7fb;overscroll-behavior:contain}
+.home-inner{max-width:1180px;margin:0 auto;padding:30px clamp(14px,4vw,40px) 65px}
+.home-hero{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:22px}
+.eyebrow{display:block;color:#557db2;font-size:10px;font-weight:800;letter-spacing:.14em;margin-bottom:8px}
+.home-hero h2,.analysis-top h2{margin:0;font-size:clamp(22px,3vw,30px);letter-spacing:-.04em;color:#192e4a}
+.home-hero p,.analysis-top p{margin:8px 0 0;color:#76869c;font-size:13px}
+.hero-action{font-size:14px;padding:13px 17px;min-height:45px}
+.home-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.home-actions input{max-width:360px;flex:1 1 210px;height:41px}
+.home-actions .btn{min-height:41px}
+.project-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:15px}
+.project-card{background:#fff;border:1px solid #dbe5f0;border-radius:16px;padding:20px;box-shadow:0 6px 22px #2338500a;display:flex;flex-direction:column;gap:14px;min-height:190px}
+.project-card.current{border-color:#9ebff9;box-shadow:0 0 0 2px #e0ecff}
+.project-icon{width:43px;height:43px;border-radius:13px;background:#e9f1ff;color:#3066c5;display:grid;place-items:center;font-size:23px;font-weight:800}
+.project-card h3{margin:0;font-size:17px;overflow-wrap:anywhere}
+.project-card p{margin:5px 0 0;font-size:12px;color:#73849a}
+.project-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;color:#5c6f8c;font-size:12px}
+.project-meta span{background:#f2f6fc;border-radius:6px;padding:6px 8px}
+.project-card-actions{display:flex;gap:7px;margin-top:auto}
+.project-card-actions .btn{flex:1}.project-card-actions .btn:first-child{background:#2c65d0;color:white;border-color:#2c65d0}
+.home-note{margin-top:22px;padding:14px 16px;background:#edf3fc;border:1px solid #d8e5f7;border-radius:11px;color:#536987;font-size:12px;line-height:1.7}
+.analysis-overlay{position:fixed;inset:0;z-index:150;background:#0d203a78;display:grid;place-items:center;padding:clamp(8px,3vw,24px)}
+.analysis-dialog{width:min(960px,100%);height:min(790px,94dvh);display:flex;flex-direction:column;overflow:hidden;background:#f8faff;border:1px solid #dce6f2;border-radius:18px;box-shadow:0 24px 75px #0b21444f}
+.analysis-top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:20px 23px 13px;background:white;border-bottom:1px solid #e2eaf6}
+.analysis-settings{display:flex;flex-wrap:wrap;gap:12px;padding:12px 22px;background:#fff;border-bottom:1px solid #e5edf7}
+.analysis-settings label{display:flex;align-items:center;gap:7px;font-size:12px;color:#63758d;font-weight:700}
+.analysis-settings select{border:1px solid #d1ddea;border-radius:8px;background:white;padding:9px;font-size:12px;max-width:220px;color:#2b405e}
+.analysis-scroll{overflow:auto;min-height:0;flex:1;padding:18px 22px}
+.analysis-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:18px}
+.stat-card{background:white;border:1px solid #e0e9f3;border-radius:12px;padding:15px}.stat-card strong{display:block;font-size:25px;color:#1b3558}.stat-card small{display:block;font-size:11px;color:#73849b;margin-top:4px}
+.analysis-body{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.analysis-section{padding:16px;background:white;border-radius:12px;border:1px solid #dfe8f4;min-width:0}
+.analysis-section h3{font-size:14px;margin:0 0 7px;color:#1c3958}.analysis-section p{font-size:11px;line-height:1.6;color:#7d8da1;margin:0 0 10px}
+.analysis-list{display:flex;flex-wrap:wrap;gap:6px}.analysis-tag{border:1px solid #d6e3f5;border-radius:8px;padding:8px 10px;background:#f4f8ff;color:#305784;font-size:12px;cursor:pointer}.analysis-tag:hover{background:#e4efff}.analysis-ok{font-size:12px;color:#28836d;padding:8px 0}
+.analysis-warn{border-color:#f4d99c;background:#fffaed;color:#92651a}
+.analysis-foot{padding:10px 22px;margin:0;font-size:11px;color:#7c8da0;background:white;border-top:1px solid #dfe8f4;line-height:1.5}
+@media(max-width:900px){header{padding:8px 10px}.header-actions{gap:5px}.header-actions .btn{padding:7px 9px}.project-switcher{padding:4px;gap:4px}.project-switcher select{min-width:100px;max-width:135px}}
+@media(max-width:680px){header{min-height:0;gap:6px}.brand .logo{width:32px;height:32px;border-radius:9px;font-size:20px}.brand h1{font-size:15px}.project-switcher{order:3;width:100%}.project-switcher .btn:not(.home-link){font-size:10px;padding:6px}.header-actions .btn{font-size:10px;padding:6px}.app{display:flex;flex-direction:column;min-height:0}.main{flex:1 1 57%;min-height:0!important;height:auto!important}.inspector{flex:1 1 43%;min-height:0!important;height:auto!important}.toolbar{flex-wrap:nowrap;overflow-x:auto;min-height:50px;padding:6px 9px}.toolbar .toolbar-group{flex-wrap:nowrap}.toolbar .btn{min-height:36px}.mobile-controls{max-height:135px;overflow:auto}.searchbox{min-width:185px;flex:0 0 185px}.canvas-hint{padding:5px 7px}.inspector-head{padding:9px 14px}.inspector-body{overflow:auto;max-height:none!important}.home-inner{padding:20px 14px 55px}.home-hero{align-items:flex-start;flex-direction:column}.analysis-top{padding:13px}.analysis-top h2{font-size:20px}.analysis-settings{padding:9px;gap:7px}.analysis-scroll{padding:10px}.analysis-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.analysis-body{grid-template-columns:1fr}.analysis-dialog{height:98dvh}.analysis-foot{padding:8px}}
+
+
+/* Function Canvas v4 */
+.language-chooser{display:flex;gap:5px;align-items:center;color:#536987;font-size:12px;font-weight:700;white-space:nowrap}
+.language-chooser select{min-width:76px;padding:8px 10px;border:1px solid #b9d0ee;border-radius:8px;background:#eaf1ff;color:#21466d;font-weight:700}
+.legend-strip{position:sticky;z-index:5;top:6px;left:14px;display:inline-flex;align-items:center;gap:6px;margin:7px 12px 0;padding:6px 9px;border:1px solid #d8e6f3;border-radius:9px;background:#fffffff0;color:#60728b;font-size:10px;white-space:nowrap;box-shadow:0 2px 9px #1d2d4710}
+.legend-strip span{display:inline-block;width:18px;height:0;border-top:3px solid #4582d6}.legend-strip .key-manual{border-color:#8293a9}.legend-strip .key-state{border-color:#8559c5;border-top-style:dashed}
+.node{overflow:visible}.node-port{position:absolute;top:65px;right:-13px;z-index:5;border:2px solid #fff;background:#337add;color:#fff;border-radius:50%;width:27px;height:27px;display:grid;place-items:center;box-shadow:0 2px 9px #34588150;touch-action:none;cursor:crosshair;font-size:15px;padding:0}
+.node-port:active{background:#1f4e9c}.node.auto-node .node-name::after{content:' auto';font-size:9px;padding:1px 4px;color:#176aab;background:#e8f5ff;border-radius:4px;margin-left:6px}.node.stale-node{opacity:.5;border-style:dashed}.node .node-head{overflow:hidden;border-radius:8px 8px 0 0}
+.edge-group.origin-auto .edge-path{stroke:#4489d4;stroke-width:2.7}.edge-group.origin-auto.kind-state .edge-path{stroke:#8559c5}.edge-grip{fill:#fff;stroke:#377de2;stroke-width:3;cursor:grab;touch-action:none;pointer-events:all}.edge-grip:hover{r:9}.edge-preview{fill:none;stroke:#d99a25;stroke-width:3;stroke-dasharray:8 5;pointer-events:none}
+.edge-hit{stroke-width:25}.edge-grip{pointer-events:all}
+.v4-dialog{display:flex;flex-direction:column;width:min(860px,100%);max-height:min(760px,95dvh);background:#f9fbff;border-radius:16px;overflow:hidden;box-shadow:0 20px 50px #1e31545e}
+.v4-dialog-head{background:white;border-bottom:1px solid #dfe7f2;padding:16px 20px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.v4-dialog-head h2{font-size:20px;margin:0}.v4-dialog-head p{color:#708197;font-size:12px;margin:5px 0}
+.v4-dialog-scroll{overflow:auto;flex:1;min-height:0;padding:18px 20px;line-height:1.6;font-size:13px}
+.v4-dialog-actions{display:flex;justify-content:flex-end;gap:9px;border-top:1px solid #dfe7f2;background:white;padding:14px 20px}
+.v4-card{background:#fff;border:1px solid #dce6f2;border-radius:10px;padding:12px 14px;margin:8px 0}.v4-card strong{font-size:13px}.v4-card p{font-size:12px;color:#6a7e96;margin:5px 0}.v4-stat{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}.v4-stat span{background:#eaf2fe;color:#315c91;font-size:11px;padding:5px 8px;border-radius:7px}
+.v4-file{padding:6px 8px;border-bottom:1px solid #edf0f5;color:#485b74;overflow-wrap:anywhere;font-family:monospace;font-size:12px}
+.v4-warning{padding:10px 12px;background:#fff8e7;border:1px solid #f0d39d;border-radius:8px;color:#82611c;font-size:12px;margin:10px 0}
+.v4-muted{font-size:12px;color:#687e99;line-height:1.65}
+.source-meta{font-size:11px;color:#456c9d;background:#edf4fc;padding:7px 10px;border-radius:8px;margin-bottom:8px;overflow-wrap:anywhere}
+.source-open{margin:5px 0;display:block;width:100%;text-align:left}
+.source-code-scroll{flex:1;overflow:auto;background:#101e33;color:#deedfc;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;line-height:1.7;overscroll-behavior:contain}
+.source-line{display:flex;min-width:max-content;white-space:pre}.source-line .ln{flex:0 0 56px;text-align:right;padding:0 13px 0 4px;color:#7389a4;user-select:none;border-right:1px solid #30445f}.source-line .content{padding:0 16px;tab-size:4}.source-line.hl{background:#37507488;border-left:3px solid #65acff}
+.unresolved-entry{border:1px solid #e4ebf6;background:#fff;padding:10px 12px;margin-bottom:7px;border-radius:9px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.unresolved-entry code{font-size:12px;color:#334766}.unresolved-entry small{color:#8594a8;display:block;margin-top:2px}.unresolved-entry button{flex-shrink:0}
+@media(max-width:900px){.language-chooser select{min-width:68px}.header-actions{gap:4px}.toolbar .btn{padding:7px 9px}}
+@media(max-width:680px){.v4-dialog-head{padding:12px}.v4-dialog-scroll{padding:10px}.v4-dialog-actions{padding:10px}.legend-strip{margin:4px 8px 0;font-size:9px}.source-code-scroll{font-size:11px}}
+
+</style>
+</head>
+<body>
+<header><div class="brand"><div class="logo">ƒ</div><div><h1>Function Canvas</h1><p>C / Pythonの関数と依存関係を、図で設計する</p></div></div><div class="project-switcher"><button class="btn home-link" id="homeBtn">▦ プロジェクト一覧</button><label for="projectSelect">プロジェクト</label><select id="projectSelect" aria-label="作業するプロジェクト"></select><button class="btn" id="newProjectBtn">＋ 新規</button><label class="language-chooser" for="languageSelect">言語 <select id="languageSelect" aria-label="解析する言語"><option value="c">C</option><option value="py">Python</option></select></label><button class="btn" id="renameProjectBtn">名前変更</button><button class="btn danger" id="deleteProjectBtn">削除</button></div><div class="header-actions"><button class="btn" id="exportBtn">↓ JSON保存</button><button class="btn" id="importBtn">↑ 読み込み</button><input class="file-input" type="file" id="importFile" accept=".json,application/json"/><button class="btn danger" id="resetBtn">サンプルに戻す</button></div></header>
+
+<section class="home-screen" id="homeScreen" hidden aria-label="プロジェクト一覧">
+  <div class="home-inner">
+    <div class="home-hero">
+      <div><span class="eyebrow">WORKSPACES</span><h2>プロジェクト一覧</h2><p>42の課題ごとに関数設計を整理。ソース / ZIPから自動生成することもできます。</p></div>
+      <button class="btn primary hero-action" id="homeNewBtn">＋ 新しいプロジェクト</button>
+    </div>
+    <div class="home-actions"><label class="sr-only" for="projectSearch">プロジェクトを検索</label><input id="projectSearch" placeholder="⌕ プロジェクト名を検索" autocomplete="off" />
+      <button class="btn" id="exportAllBtn">↓ 全プロジェクトを保存</button><button class="btn" id="importAllBtn">↑ 全プロジェクトを読み込む</button><input class="file-input" id="importAllFile" type="file" accept=".json,application/json" />
+    </div>
+    <div id="projectCards" class="project-grid"></div>
+    <div class="home-note"><strong>保存先について：</strong>データはこのiPadのブラウザ内に保存されます。Safariとホーム画面のWebアプリでデータが別になる場合があるため、移行前に「全プロジェクトを保存」でバックアップしてください。</div>
+  </div>
+</section>
+<div class="analysis-overlay" id="analysisOverlay" hidden>
+  <section class="analysis-dialog" role="dialog" aria-modal="true" aria-labelledby="analysisTitle">
+    <div class="analysis-top"><div><span class="eyebrow">DEPENDENCY INSIGHTS</span><h2 id="analysisTitle">依存関係の自動分析</h2><p id="analysisProjectName">接続線から関数同士の関係を調べます</p></div><button class="btn" id="closeAnalysis">✕ 閉じる</button></div>
+    <div class="analysis-settings"><label>分析する接続<select id="analysisScope"><option value="call">関数呼び出しのみ</option><option value="all">すべて（状態依存も含む）</option></select></label><label>入口となる関数<select id="analysisRoot"><option value="">指定しない</option></select></label></div>
+    <div class="analysis-scroll"><div id="analysisStats" class="analysis-stats"></div><div id="analysisBody" class="analysis-body"></div></div>
+    <p class="analysis-foot">分析は矢印の接続情報に基づく設計上のヒントです。循環や依存数の多さが必ずしも不具合を意味するわけではありません。</p>
+  </section>
+</div>
+
+
+<section class="analysis-overlay" id="sourceImportOverlay" hidden>
+  <div class="v4-dialog" role="dialog" aria-modal="true" aria-labelledby="importTitle">
+    <div class="v4-dialog-head"><div><span class="eyebrow">SOURCE IMPORT</span><h2 id="importTitle">ソース解析の確認</h2></div><button class="btn" id="cancelSourceImport">✕ 閉じる</button></div>
+    <div id="importSummary" class="v4-dialog-scroll"></div>
+    <div class="v4-dialog-actions"><button class="btn" id="cancelSourceImport2">キャンセル</button><button class="btn primary" id="applySourceImport">解析結果を反映する</button></div>
+  </div>
+</section>
+<section class="analysis-overlay" id="sourceViewerOverlay" hidden>
+  <div class="v4-dialog code-dialog" role="dialog" aria-modal="true" aria-labelledby="sourceViewerTitle">
+    <div class="v4-dialog-head"><div><span class="eyebrow">SOURCE VIEWER</span><h2 id="sourceViewerTitle">ソースコード</h2><p id="sourceViewerSubtitle"></p></div><button class="btn" id="closeSourceViewer">✕ 閉じる</button></div>
+    <div class="source-code-scroll" id="sourceCodeBody"></div>
+  </div>
+</section>
+<section class="analysis-overlay" id="unresolvedOverlay" hidden>
+  <div class="v4-dialog" role="dialog" aria-modal="true" aria-labelledby="unresolvedTitle">
+    <div class="v4-dialog-head"><div><span class="eyebrow">STATIC ANALYSIS</span><h2 id="unresolvedTitle">未解決の呼び出し</h2><p>標準ライブラリ・外部関数・動的呼び出しなどを含みます。未解決 = エラーではありません。</p></div><button class="btn" id="closeUnresolved">✕ 閉じる</button></div>
+    <div class="v4-dialog-scroll" id="unresolvedBody"></div>
+  </div>
+</section>
+
+<div class="app"><main class="main"><div class="toolbar"><div class="toolbar-group"><button class="btn primary" id="addBtn">＋ 新しい関数</button><button class="btn" id="connectBtn">↗ 接続する</button><button class="btn" id="sourceImportBtn">⇧ ソース / ZIP</button><input id="sourceFileInput" class="file-input" type="file" multiple accept=".c,.h,.py,.zip,application/zip"/><button class="btn" id="layoutBtn">▦ 自動整列</button><button class="btn" id="analysisBtn">◎ 依存関係の分析</button><button class="btn" id="unresolvedBtn">? 未解決 <span id="unresolvedCount">0</span></button></div>
+<div class="searchbox"><label class="sr-only" for="nodeSearch">関数を検索</label><input id="nodeSearch" autocomplete="off" placeholder="⌕ 関数を検索（名前・責務・契約）" /><button id="clearSearch" class="search-clear" aria-label="検索を消す">×</button><div class="search-results" id="searchResults" hidden></div></div><div class="toolbar-group"><span class="help-pill" id="zoomLabel">100%</span><button class="btn small" id="zoomOut" aria-label="縮小">－</button><button class="btn small" id="zoomIn" aria-label="拡大">＋</button><button class="btn small" id="fitBtn">全体表示</button></div></div><div class="mobile-controls" id="mobileControls">
+<label>編集する関数<select id="mobileNodeSelect"><option value="">関数を選択</option></select></label>
+<label>接続元<select id="mobileFrom"><option value="">接続元を選択</option></select></label>
+<label>接続先<select id="mobileTo"><option value="">接続先を選択</option></select></label>
+<label>関係<select id="mobileKind"><option value="call">関数呼び出し →</option><option value="state">状態更新・依存 ⇢</option></select></label>
+<button class="btn primary" id="mobileConnect">接続を追加</button>
+</div><div class="canvas-wrap" id="canvas"><div class="legend-strip"><span class="key-auto"></span>自動検出 <span class="key-manual"></span>手動接続 <span class="key-state"></span>状態依存</div><div class="canvas-hint" id="hint">ノードをドラッグして移動 ・ 選択すると右側で編集できます</div><div class="world-shell" id="shell"><div class="world" id="world"><svg class="edges" id="edges" viewBox="0 0 2600 1900"><defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 L9 4.5 L0 9 Z" fill="#8798ac"/></marker><marker id="arrowState" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 L9 4.5 L0 9 Z" fill="#8559c5"/></marker></defs><g id="edgeLayer"></g></svg><div id="nodeLayer"></div></div></div></div></main><aside class="inspector"><div class="inspector-head"><div><h2 id="inspectorTitle">関数設計メモ</h2><p id="inspectorSubtitle">ノードを選ぶと詳細を編集できます</p></div><span style="font-size:22px;color:#a0afc2">☷</span></div><div class="inspector-body" id="inspectorBody"></div></aside></div><div class="status" id="toast" role="status"></div>
+<script src="./jszip.min.js"></script>
+<script src="./parser.js"></script>
+<script>
+
+
+(()=>{'use strict';
+const FIELDS=[['name','関数名','例：parse_format'],['responsibility','責務','何を担当する関数か'],['input','入力','引数とその意味'],['changes','変更するもの','状態・メモリ・出力先など'],['unchanged','変更しないもの','維持する必要がある状態'],['dependencies','依存する関数','呼び出す関数'],['preconditions','前提条件','呼び出し元が保証すること'],['contract','契約','成功時・失敗時の振る舞い']];
+const WIDTH=266, HEIGHT=150, WORLD_W=2600, WORLD_H=1900;
+let nodes=[],edges=[],projects=[],currentProjectId=null,selected=null,selectedEdge=null,connectFrom=null,connectMode=false,zoom=1,drag=null,dirty=false,saveQueued=false;
+let searchQuery='',homeOpen=false;
+let edgeDrag=null,stagedSource=null,sourceSnapshot=null;
+const $=id=>document.getElementById(id);
+const escapeHtml=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const id=()=> 'n_'+Math.random().toString(36).slice(2,10);
+const sample=()=>{
+const entries=[
+['printf','ft_printf()','可変長引数を準備し、解析を呼び出して結果を返す','const char *format, ...','args、ローカルctx','formatの内容','init_ctx(), parse_format()','formatは有効な文字列','成功時は合計出力文字数、失敗時は-1','control',600,65],
+['init','init_ctx()','解析・集計状態を初期化する','t_ctx *ctx','ctx->start、ctx->total_len','その他の状態','なし','ctxが有効','開始位置と累計を0にする','state',260,320],
+['parse','parse_format()','書式を走査し、通常文字列と指定子を振り分ける','format, va_list *args, t_ctx *ctx','ctx->start、間接的にtotal_len','formatの内容','flush_text(), parse_specifier(), record_output()','argsとctxが初期化済み','成功時は出力文字数、失敗時は-1','control',720,320],
+['flush','flush_text()','通常文字列の未出力範囲をまとめて書き込む','format, ctx, position','出力先','format・ctxの値','all_write()','start ≤ position','出力文字数または-1','output',350,620],
+['spec','parse_specifier()','変換指定子を判定し、対応する関数を呼び出す','char c, va_list *args','出力先、引数の読み取り位置','t_ctx','print_xxx(), all_write()','対応する引数の型が正しい','成功時は出力文字数、失敗時は-1','control',1050,620],
+['record','record_output()','出力結果を集計し、INT_MAX超過を検査する','t_ctx *ctx, ssize_t output_len','ctx->total_len','ctx->start','なし','0 ≤ total_len ≤ INT_MAX','成功時は更新後累計、失敗時は-1','state',705,895],
+['write','all_write()','部分書き込みに対応してバイト列を出力する','int fd, const char *s, size_t len','出力先fd','sの内容','write()','有効なバイト列、len ≤ SSIZE_MAX','成功時は出力文字数、失敗時は-1','output',350,1170],
+['print','print_xxx() 群','char / string / int / hex / pointer を変換して出力する','変換対象の値','出力先','解析状態','all_write()','入力型と指定子が対応','成功時は出力文字数、失敗時は-1','output',1100,895]
+];return {nodes:entries.map(e=>({id:e[0],name:e[1],responsibility:e[2],input:e[3],changes:e[4],unchanged:e[5],dependencies:e[6],preconditions:e[7],contract:e[8],type:e[9],x:e[10],y:e[11]})),edges:[['printf','init'],['printf','parse'],['parse','flush'],['parse','spec'],['parse','record'],['flush','write'],['spec','print'],['spec','write'],['print','write']].map(([from,to])=>({id:id(),from,to,kind:'call'}))};};
+const STORAGE_KEY='function-canvas-projects-v2';
+function blankMap(){return {nodes:[],edges:[]}}
+function persist(){
+  const current=projects.find(p=>p.id===currentProjectId);
+  if(current){current.nodes=nodes;current.edges=edges;}
+  try{localStorage.setItem(STORAGE_KEY,JSON.stringify({projects,currentProjectId}));}catch(e){toast('保存できません。JSON保存でバックアップしてください');}
+}
+function scheduleSave(){if(saveQueued)return;saveQueued=true;setTimeout(()=>{saveQueued=false;persist();},200)}
+function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.classList.remove('show'),2300)}
+function newProject(name,data){const map=data||blankMap();return {id:id(),name,nodes:map.nodes,edges:map.edges,language:map.language||'c',sources:map.sources||[]}}
+function renderProjectSelect(){const select=$('projectSelect');select.innerHTML='';for(const p of projects){const opt=document.createElement('option');opt.value=p.id;opt.textContent=p.name;select.appendChild(opt)}select.value=currentProjectId;}
+function switchProject(projectId){
+  if(!projects.some(p=>p.id===projectId))return;
+  persist();currentProjectId=projectId;
+  const p=projects.find(p=>p.id===projectId);nodes=p.nodes;edges=p.edges;
+  if(!p.language)p.language='c';if(!Array.isArray(p.sources))p.sources=[];$('languageSelect').value=p.language;updateUnresolvedCount();
+  selected=null;selectedEdge=null;connectFrom=null;connectMode=false;drag=null;
+  persist();renderProjectSelect();renderAll();hideHome();setTimeout(fit,40);toast('「'+p.name+'」を開きました');
+}
+function load(){
+  try{
+    const saved=JSON.parse(localStorage.getItem(STORAGE_KEY));
+    if(saved&&Array.isArray(saved.projects)&&saved.projects.length&&saved.projects.every(p=>p&&typeof p.id==='string'&&typeof p.name==='string'&&Array.isArray(p.nodes)&&Array.isArray(p.edges))){
+      projects=saved.projects;
+      currentProjectId=projects.some(p=>p.id===saved.currentProjectId)?saved.currentProjectId:projects[0].id;
+      const p=projects.find(p=>p.id===currentProjectId);nodes=p.nodes;edges=p.edges;renderProjectSelect();return;
+    }
+  }catch(e){}
+  let existing=null;
+  try{const old=JSON.parse(localStorage.getItem('function-canvas-v1'));if(old&&Array.isArray(old.nodes)&&Array.isArray(old.edges))existing=old}catch(e){}
+  projects=[newProject('ft_printf',existing||sample())];currentProjectId=projects[0].id;
+  nodes=projects[0].nodes;edges=projects[0].edges;persist();renderProjectSelect();
+}
+function nodeById(nid){return nodes.find(n=>n.id===nid)}
+function renderNodes(){
+ const layer=$('nodeLayer');layer.innerHTML='';
+ for(const n of nodes){
+   const el=document.createElement('article');
+   el.className='node type-'+(n.type||'control')+(n.generated?' auto-node':'')+(n.sourceMissing?' stale-node':'')+(selected===n.id?' selected':'')+(connectFrom===n.id?' connect-origin':'')+(searchQuery?(matchesNode(n,searchQuery)?' search-hit':' search-dim'):'');
+   el.style.left=n.x+'px';el.style.top=n.y+'px';el.dataset.id=n.id;
+   el.innerHTML='<div class="node-head"><div class="node-name">'+escapeHtml(n.name||'無名関数')+'</div><span class="node-type">'+({control:'制御 / 解析',output:'出力 / 変換',state:'状態管理'}[n.type]||'制御 / 解析')+'</span></div><div class="node-body"><div class="node-resp">'+escapeHtml(n.responsibility||'責務を入力してください')+'</div><div class="node-input">入力：'+escapeHtml(n.input||'未設定')+'</div></div>';
+   const port=document.createElement('button');port.className='node-port';port.title='ここから接続先へドラッグ';port.type='button';port.textContent='→';port.setAttribute('aria-label',n.name+'から接続線をドラッグ');
+   port.addEventListener('pointerdown',e=>{if(e.button!==0)return;e.preventDefault();e.stopPropagation();startEdgeDrag(e,{type:'new',from:n.id})});
+   port.addEventListener('click',e=>{e.stopPropagation();e.preventDefault()});
+   el.appendChild(port);el.addEventListener('pointerdown',e=>pointerDown(e,n.id,el));layer.appendChild(el);
+ }
+}
+function pathFor(a,b){let sx,sy,tx,ty;if(b.y>a.y+25){sx=a.x+WIDTH/2;sy=a.y+HEIGHT;tx=b.x+WIDTH/2;ty=b.y;let d=Math.max(45,Math.abs(ty-sy)*.46);return `M ${sx} ${sy} C ${sx} ${sy+d}, ${tx} ${ty-d}, ${tx} ${ty}`;}if(b.y+HEIGHT<a.y-25){sx=a.x+WIDTH/2;sy=a.y;tx=b.x+WIDTH/2;ty=b.y+HEIGHT;let d=Math.max(45,Math.abs(ty-sy)*.46);return `M ${sx} ${sy} C ${sx} ${sy-d}, ${tx} ${ty+d}, ${tx} ${ty}`;}const right=b.x>a.x;sx=a.x+(right?WIDTH:0);sy=a.y+HEIGHT/2;tx=b.x+(right?0:WIDTH);ty=b.y+HEIGHT/2;const d=Math.max(40,Math.abs(tx-sx)*.5);return `M ${sx} ${sy} C ${sx+(right?d:-d)} ${sy}, ${tx+(right?-d:d)} ${ty}, ${tx} ${ty}`;}
+function renderEdges(){
+ const layer=$('edgeLayer');layer.innerHTML='';
+ for(const e of edges){
+   const a=nodeById(e.from),b=nodeById(e.to);if(!a||!b)continue;
+   const g=document.createElementNS('http://www.w3.org/2000/svg','g');
+   g.setAttribute('class','edge-group'+(selectedEdge===e.id?' selected':'')+(e.kind==='state'?' kind-state':'')+(e.origin==='auto'?' origin-auto':' origin-manual'));
+   const d=pathFor(a,b),p=document.createElementNS('http://www.w3.org/2000/svg','path');p.setAttribute('d',d);p.setAttribute('class','edge-path');p.setAttribute('marker-end',e.kind==='state'?'url(#arrowState)':'url(#arrow)');
+   const hit=document.createElementNS('http://www.w3.org/2000/svg','path');hit.setAttribute('d',d);hit.setAttribute('class','edge-hit');g.append(p,hit);
+   g.addEventListener('click',ev=>{ev.stopPropagation();if(Date.now()<window._fcIgnoreEdgeClickUntil)return;connectMode=false;connectFrom=null;selected=null;selectedEdge=e.id;renderAll()});
+   hit.addEventListener('pointerdown',ev=>{if(ev.button!==0)return;ev.stopPropagation();ev.preventDefault();selectedEdge=e.id;selected=null;renderEdges();startEdgeDrag(ev,{type:'existing',edgeId:e.id,end:'to'})});
+   if(selectedEdge===e.id){
+     const coords=d.match(/-?\d+(?:\.\d+)?/g).map(Number);
+     for(const side of ['from','to']){
+       const circle=document.createElementNS('http://www.w3.org/2000/svg','circle');
+       const isH=Math.abs(coords[6]-coords[0])>=Math.abs(coords[7]-coords[1]);const sign=(isH?coords[6]-coords[0]:coords[7]-coords[1])>=0?1:-1;const offset=(side==='from'?15:-15)*sign;circle.setAttribute('cx',(side==='from'?coords[0]:coords[6])+(isH?offset:0));circle.setAttribute('cy',(side==='from'?coords[1]:coords[7])+(isH?0:offset));circle.setAttribute('r','8');circle.setAttribute('class','edge-grip');
+       circle.addEventListener('pointerdown',ev=>{if(ev.button!==0)return;ev.stopPropagation();ev.preventDefault();startEdgeDrag(ev,{type:'existing',edgeId:e.id,end:side})});
+       g.append(circle);
+     }
+   }
+   layer.appendChild(g);
+ }
+}
+function renderMobile(){
+ const choices='<option value="">選択してください</option>'+nodes.map(n=>'<option value="'+escapeHtml(n.id)+'">'+escapeHtml(n.name)+'</option>').join('');
+ for(const key of ['mobileNodeSelect','mobileFrom','mobileTo']){
+   const el=$(key),value=key==='mobileNodeSelect'?(selected||''):el.value;
+   el.innerHTML=choices;el.value=value;
+ }
+}
+function renderAll(){renderEdges();renderNodes();renderInspector();updateToolbar();renderMobile()}
+function updateToolbar(){$('connectBtn').classList.toggle('active',connectMode);$('connectBtn').textContent=connectMode?'× 接続を中止':'↗ 接続する';$('hint').textContent=connectMode?(connectFrom?'接続先の関数をクリックしてください':'接続元の関数をクリックしてください'):'関数をタップするか、上の選択欄から選んで編集できます';$('zoomLabel').textContent=Math.round(zoom*100)+'%'}
+function fieldControl(key,label,ph,value){const idd='field-'+key;const multiline=['responsibility','preconditions','contract','dependencies'].includes(key);return `<div class="field"><label for="${idd}">${label}</label>${multiline?`<textarea id="${idd}" data-field="${key}" placeholder="${ph}" rows="2">${escapeHtml(value)}</textarea>`:`<input id="${idd}" data-field="${key}" placeholder="${ph}" value="${escapeHtml(value)}" />`}</div>`}
+function renderInspector(){let body=$('inspectorBody');if(selectedEdge){const e=edges.find(x=>x.id===selectedEdge);if(!e){selectedEdge=null;return renderInspector()}const a=nodeById(e.from),b=nodeById(e.to);$('inspectorTitle').textContent='接続の編集';$('inspectorSubtitle').textContent='関数同士の関係を設定';body.innerHTML=`<div class="field"><label>接続元</label><div class="chip">${escapeHtml(a?.name||'?')}</div></div><div class="field"><label>接続先</label><div class="chip">${escapeHtml(b?.name||'?')}</div></div><div class="field"><label>作成方法</label><div class="chip">${e.origin==='auto'?'ソースから自動生成':'手動で作成'}</div></div><div class="field"><label for="edgeKind">関係の種類</label><select id="edgeKind"><option value="call" ${e.kind!=='state'?'selected':''}>関数呼び出し（実線）</option><option value="state" ${e.kind==='state'?'selected':''}>状態の更新・依存（破線）</option></select></div><button class="btn danger" id="deleteEdge">この接続を削除</button>`;$('edgeKind').onchange=ev=>{e.kind=ev.target.value;scheduleSave();renderEdges()};$('deleteEdge').onclick=()=>{edges=edges.filter(x=>x.id!==e.id);selectedEdge=null;scheduleSave();renderAll();toast('接続を削除しました')};return}
+if(!selected){$('inspectorTitle').textContent='関数設計メモ';$('inspectorSubtitle').textContent='ノードを選んで契約を記入';body.innerHTML='<div class="empty"><span class="em">✎</span>ノードをクリックすると<br>「責務・入力・変更するもの・契約」などを<br>編集できます。<br><br>「＋ 新しい関数」で追加、<br>「接続する」で関数をつなげます。</div><div class="section-title">このアプリでできること</div><div class="connections"><span class="chip">ドラッグ移動</span><span class="chip">ノード編集</span><span class="chip">矢印で接続</span><span class="chip">ソース解析</span><span class="chip">ZIP取り込み</span><span class="chip">JSON保存・読込</span><span class="chip">自動保存</span></div>';return}
+const n=nodeById(selected);if(!n){selected=null;return renderInspector()}$('inspectorTitle').textContent='関数設計メモ';$('inspectorSubtitle').textContent='入力内容は自動保存されます';body.innerHTML=`<div class="field"><label for="typeField">ノードの種類</label><select id="typeField"><option value="control" ${n.type==='control'?'selected':''}>制御・解析（青）</option><option value="output" ${n.type==='output'?'selected':''}>出力・変換（緑）</option><option value="state" ${n.type==='state'?'selected':''}>状態管理（紫）</option></select></div>`+FIELDS.map(([key,label,ph])=>fieldControl(key,label,ph,n[key]||'')).join('')+`<div class="section-title">ノードを移動（タッチ操作向け）</div><div class="inspector-actions"><button class="btn" data-move="left">← 左</button><button class="btn" data-move="up">↑ 上</button><button class="btn" data-move="down">↓ 下</button><button class="btn" data-move="right">右 →</button></div><div class="inspector-actions"><button class="btn" id="duplicateNode">複製</button><button class="btn danger" id="deleteNode">削除</button></div><div class="section-title">接続中の関数</div><div class="connections" id="nodeConnections"></div><div class="footer-note">契約：呼び出し元が信頼できる「成功・失敗時の約束」。内部の処理手順をここに書く必要はありません。</div>`;
+if(n.sourceFile){body.insertAdjacentHTML('beforeend',`<div class="section-title">ソースコード</div><div class="source-meta">${escapeHtml(n.sourceFile)} : ${n.sourceLine||'?'} 行目 ${n.sourceMissing?'（再解析で見つからない定義）':''}</div><button class="btn primary source-open" id="openSourceBtn">⌘ 該当するソースを開く</button><div class="section-title">静的解析の補足</div><div class="v4-muted">${escapeHtml((n.unresolvedCalls||[]).slice(0,12).map(c=>c.target).join('、')||'未解決の呼び出しはありません')}</div>`);}body.querySelectorAll('[data-field]').forEach(el=>el.addEventListener('input',ev=>{n[ev.target.dataset.field]=ev.target.value;scheduleSave();renderNodes()}));$('typeField').onchange=ev=>{n.type=ev.target.value;scheduleSave();renderNodes()};body.querySelectorAll('[data-move]').forEach(b=>b.onclick=()=>{const delta={left:[-55,0],right:[55,0],up:[0,-55],down:[0,55]}[b.dataset.move];n.x=Math.max(0,Math.min(WORLD_W-WIDTH,n.x+delta[0]));n.y=Math.max(0,Math.min(WORLD_H-HEIGHT,n.y+delta[1]));scheduleSave();renderNodes();renderEdges()});$('duplicateNode').onclick=()=>{const copy={...n,id:id(),name:n.name+' copy',x:Math.min(WORLD_W-WIDTH,n.x+40),y:Math.min(WORLD_H-HEIGHT,n.y+185)};nodes.push(copy);selected=copy.id;scheduleSave();renderAll();toast('ノードを複製しました')};$('deleteNode').onclick=()=>{if(!confirm('この関数と関連する接続を削除しますか？'))return;edges=edges.filter(e=>e.from!==n.id&&e.to!==n.id);nodes=nodes.filter(x=>x.id!==n.id);selected=null;scheduleSave();renderAll();toast('ノードを削除しました')};$('openSourceBtn')?.addEventListener('click',()=>openSourceView(n.sourceFile,n.sourceLine,n.sourceEnd));const linked=edges.filter(e=>e.from===n.id||e.to===n.id);$('nodeConnections').innerHTML=linked.length?linked.map(e=>`<span class="chip">${e.from===n.id?'→':'←'} ${escapeHtml(nodeById(e.from===n.id?e.to:e.from)?.name||'')}</span>`).join(''):'<span class="help-pill">まだ接続がありません</span>'}
+function pointerDown(e,nid,el){if(e.button!==0)return;e.stopPropagation();if(connectMode){if(!connectFrom){connectFrom=nid;renderNodes();updateToolbar()}else if(connectFrom!==nid){if(edges.some(x=>x.from===connectFrom&&x.to===nid)){toast('この接続はすでに存在します')}else{edges.push({id:id(),from:connectFrom,to:nid,kind:'call',origin:'manual'});scheduleSave();toast('関数を接続しました')}connectMode=false;connectFrom=null;selected=nid;selectedEdge=null;renderAll()}return}selected=nid;selectedEdge=null;renderAll();const n=nodeById(nid);const startX=e.clientX,startY=e.clientY,ox=n.x,oy=n.y;drag={pointerId:e.pointerId,nid,startX,startY,ox,oy,moved:false};try{$('canvas').setPointerCapture(e.pointerId)}catch(err){}}
+window.addEventListener('pointermove',e=>{if(!drag||e.pointerId!==drag.pointerId)return;const n=nodeById(drag.nid);if(!n)return;const dx=(e.clientX-drag.startX)/zoom,dy=(e.clientY-drag.startY)/zoom;if(Math.abs(dx)+Math.abs(dy)>3)drag.moved=true;n.x=Math.max(0,Math.min(WORLD_W-WIDTH,drag.ox+dx));n.y=Math.max(0,Math.min(WORLD_H-HEIGHT,drag.oy+dy));const el=[...document.querySelectorAll('.node')].find(x=>x.dataset.id===n.id);if(el){el.style.left=n.x+'px';el.style.top=n.y+'px'}renderEdges()});window.addEventListener('pointerup',e=>{if(drag&&e.pointerId===drag.pointerId){if(drag.moved)scheduleSave();drag=null}});
+function setZoom(z){const canvas=$('canvas');const focusX=(canvas.scrollLeft+canvas.clientWidth/2)/zoom,focusY=(canvas.scrollTop+canvas.clientHeight/2)/zoom;zoom=Math.max(.45,Math.min(1.6,Math.round(z*100)/100));$('world').style.transform='scale('+zoom+')';$('shell').style.width=(WORLD_W*zoom)+'px';$('shell').style.height=(WORLD_H*zoom)+'px';canvas.scrollLeft=focusX*zoom-canvas.clientWidth/2;canvas.scrollTop=focusY*zoom-canvas.clientHeight/2;updateToolbar()}
+function fit(){if(!nodes.length)return;const canvas=$('canvas');const minX=Math.min(...nodes.map(n=>n.x)),minY=Math.min(...nodes.map(n=>n.y)),maxX=Math.max(...nodes.map(n=>n.x+WIDTH)),maxY=Math.max(...nodes.map(n=>n.y+HEIGHT));const desired=Math.min(1.05,(canvas.clientWidth-100)/(maxX-minX+80),(canvas.clientHeight-80)/(maxY-minY+80));zoom=Math.max(.45,Math.min(1.6,desired));$('world').style.transform=`scale(${zoom})`;$('shell').style.width=(WORLD_W*zoom)+'px';$('shell').style.height=(WORLD_H*zoom)+'px';canvas.scrollLeft=Math.max(0,(minX-45)*zoom);canvas.scrollTop=Math.max(0,(minY-50)*zoom);updateToolbar()}
+function layout(){if(!nodes.length)return;const incoming=new Map(nodes.map(n=>[n.id,0]));for(const e of edges)if(incoming.has(e.to))incoming.set(e.to,incoming.get(e.to)+1);let root=nodes.filter(n=>incoming.get(n.id)===0);if(!root.length)root=[nodes[0]];const levels=new Map(),queue=root.map(n=>[n.id,0]);while(queue.length){const [current,depth]=queue.shift();if(levels.has(current))continue;levels.set(current,depth);for(const e of edges.filter(e=>e.from===current))if(!levels.has(e.to))queue.push([e.to,Math.min(depth+1,7)])}for(const n of nodes)if(!levels.has(n.id))levels.set(n.id,Math.max(0,...levels.values())+1);const groups=new Map();for(const n of nodes){let d=levels.get(n.id);if(!groups.has(d))groups.set(d,[]);groups.get(d).push(n)}for(const [depth,arr] of [...groups].sort((a,b)=>a[0]-b[0])){arr.sort((a,b)=>a.x-b.x);const width=arr.length*WIDTH+(arr.length-1)*70;const start=Math.max(40,(Math.max(1300,width+60)-width)/2);arr.forEach((n,i)=>{n.x=Math.min(WORLD_W-WIDTH,start+i*(WIDTH+70));n.y=60+depth*225})}scheduleSave();renderAll();setTimeout(fit,20);toast('関数の階層に沿って配置しました')}
+$('mobileNodeSelect').onchange=ev=>{selected=ev.target.value||null;selectedEdge=null;connectMode=false;connectFrom=null;renderAll();if(selected){const n=nodeById(selected);const canvas=$('canvas');canvas.scrollLeft=Math.max(0,(n.x-30)*zoom);canvas.scrollTop=Math.max(0,(n.y-35)*zoom);if(window.matchMedia('(max-width:680px)').matches){$('inspectorBody').scrollTop=0}}};
+$('mobileConnect').onclick=()=>{const from=$('mobileFrom').value,to=$('mobileTo').value,kind=$('mobileKind').value;if(!from||!to){toast('接続元と接続先を選んでください');return}if(from===to){toast('同じ関数同士は接続できません');return}if(edges.some(e=>e.from===from&&e.to===to)){toast('すでに接続されています');return}edges.push({id:id(),from,to,kind,origin:'manual'});selected=to;selectedEdge=null;connectMode=false;connectFrom=null;scheduleSave();renderAll();toast('接続を追加しました')};
+$('addBtn').onclick=()=>{const canvas=$('canvas');const x=Math.min(WORLD_W-WIDTH,Math.max(25,(canvas.scrollLeft+canvas.clientWidth/2)/zoom-WIDTH/2));const y=Math.min(WORLD_H-HEIGHT,Math.max(25,(canvas.scrollTop+canvas.clientHeight/2)/zoom-HEIGHT/2));const n={id:id(),name:'new_function()',responsibility:'',input:'',changes:'',unchanged:'',dependencies:'',preconditions:'',contract:'',type:'control',x:x+Math.random()*30,y:y+Math.random()*30};nodes.push(n);selected=n.id;selectedEdge=null;connectMode=false;connectFrom=null;scheduleSave();renderAll();$('field-name')?.focus();toast('新しい関数を作成しました')};$('connectBtn').onclick=()=>{connectMode=!connectMode;connectFrom=null;selectedEdge=null;renderAll()};$('layoutBtn').onclick=layout;$('zoomIn').onclick=()=>setZoom(zoom+.15);$('zoomOut').onclick=()=>setZoom(zoom-.15);$('fitBtn').onclick=fit;
+$('projectSelect').onchange=e=>switchProject(e.target.value);
+$('newProjectBtn').onclick=()=>{const name=prompt('新しいプロジェクト名を入力してください（例：push_swap）','push_swap');if(name===null)return;const trimmed=name.trim();if(!trimmed){toast('名前を入力してください');return}persist();const p=newProject(trimmed);projects.push(p);switchProject(p.id);toast('新しいプロジェクトを作成しました')};
+$('renameProjectBtn').onclick=()=>{const p=projects.find(p=>p.id===currentProjectId);const name=prompt('プロジェクト名を変更',p.name);if(name===null)return;const trimmed=name.trim();if(!trimmed){toast('名前を入力してください');return}p.name=trimmed;persist();renderProjectSelect();toast('名前を変更しました')};
+$('deleteProjectBtn').onclick=()=>{if(projects.length<=1){alert('最後のプロジェクトは削除できません');return}const p=projects.find(p=>p.id===currentProjectId);if(!confirm('「'+p.name+'」を削除しますか？ このプロジェクトのノードと接続も削除されます。事前にJSON保存してください。'))return;projects=projects.filter(x=>x.id!==currentProjectId);const next=projects[0];currentProjectId=next.id;nodes=next.nodes;edges=next.edges;selected=null;selectedEdge=null;connectMode=false;connectFrom=null;persist();renderProjectSelect();renderAll();setTimeout(fit,30);toast('プロジェクトを削除しました')};
+$('exportBtn').onclick=()=>{const data=JSON.stringify({format:'function-canvas',version:1,nodes,edges},null,2);const blob=new Blob([data],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=(projects.find(p=>p.id===currentProjectId)?.name||'function-canvas').replace(/[^a-zA-Z0-9_-]/g,'_')+'.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('JSONを保存しました')};$('importBtn').onclick=()=>$('importFile').click();$('importFile').onchange=async ev=>{const file=ev.target.files?.[0];if(!file)return;try{const obj=JSON.parse(await file.text());if(!Array.isArray(obj.nodes)||!Array.isArray(obj.edges)||obj.nodes.length>400)throw new Error('JSONの形式が正しくありません');const ids=new Set();for(const n of obj.nodes){if(!n||typeof n.id!=='string'||typeof n.name!=='string'||typeof n.x!=='number'||typeof n.y!=='number'||ids.has(n.id)||!Number.isFinite(n.x)||!Number.isFinite(n.y))throw new Error('ノードの形式が不正です');ids.add(n.id);n.x=Math.max(0,Math.min(WORLD_W-WIDTH,n.x));n.y=Math.max(0,Math.min(WORLD_H-HEIGHT,n.y));n.type=['control','output','state'].includes(n.type)?n.type:'control'}nodes=obj.nodes;edges=obj.edges.filter(e=>e&&ids.has(e.from)&&ids.has(e.to)&&e.from!==e.to).map(e=>({id:typeof e.id==='string'?e.id:id(),from:e.from,to:e.to,kind:e.kind==='state'?'state':'call'}));selected=null;selectedEdge=null;connectMode=false;connectFrom=null;persist();renderAll();setTimeout(fit,30);toast('JSONを読み込みました')}catch(err){alert('読み込めませんでした：'+err.message)}ev.target.value=''};$('resetBtn').onclick=()=>{if(!confirm('現在のプロジェクトのマップをft_printfのサンプルに戻しますか？'))return;const s=sample();nodes=s.nodes;edges=s.edges;selected=null;selectedEdge=null;connectMode=false;connectFrom=null;persist();renderAll();setTimeout(fit,30)};
+$('canvas').addEventListener('click',e=>{if(Date.now()<window._fcIgnoreEdgeClickUntil)return;if(e.target===$('canvas')||e.target===$('world')||e.target===$('shell')||e.target===$('nodeLayer')||e.target===$('edges')){selected=null;selectedEdge=null;renderAll()}});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&connectMode){connectMode=false;connectFrom=null;renderAll()}if((e.key==='Delete'||e.key==='Backspace')&&selectedEdge&&!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)){edges=edges.filter(x=>x.id!==selectedEdge);selectedEdge=null;scheduleSave();renderAll()}});
+
+/* -------- v3: project overview -------- */
+function showHome(){
+  persist();homeOpen=true;document.body.classList.add('is-home');
+  $('homeScreen').hidden=false;renderProjectHome();
+  $('homeBtn').classList.add('active');
+}
+function hideHome(){
+  homeOpen=false;document.body.classList.remove('is-home');
+  $('homeScreen').hidden=true;$('homeBtn').classList.remove('active');
+}
+function renderProjectHome(){
+  const query=($('projectSearch').value||'').trim().toLocaleLowerCase();
+  const container=$('projectCards');
+  const visible=projects.filter(p=>p.name.toLocaleLowerCase().includes(query));
+  if(!visible.length){container.innerHTML='<div class="empty">該当するプロジェクトはありません</div>';return;}
+  container.innerHTML=visible.map(p=>`<article class="project-card ${p.id===currentProjectId?'current':''}">
+    <div class="project-icon">⌘</div><div><h3>${escapeHtml(p.name)}</h3><p>${p.id===currentProjectId?'最後に開いたプロジェクト':'独立した関数設計ワークスペース'}</p></div>
+    <div class="project-meta"><span>▦ ${p.nodes.length} 関数</span><span>↗ ${p.edges.length} 接続</span></div>
+    <div class="project-card-actions"><button class="btn" data-project-open="${escapeHtml(p.id)}">開く</button><button class="btn" data-project-duplicate="${escapeHtml(p.id)}">複製</button></div></article>`).join('');
+}
+$('homeBtn').onclick=()=>{if(homeOpen)hideHome();else showHome()};
+$('homeNewBtn').onclick=()=>$('newProjectBtn').click();
+$('projectSearch').oninput=renderProjectHome;
+$('projectCards').addEventListener('click',e=>{
+  const open=e.target.closest('[data-project-open]');if(open){switchProject(open.dataset.projectOpen);return;}
+  const dupe=e.target.closest('[data-project-duplicate]');if(!dupe)return;
+  const original=projects.find(p=>p.id===dupe.dataset.projectDuplicate);if(!original)return;
+  persist();const copy=JSON.parse(JSON.stringify({nodes:original.nodes,edges:original.edges,language:original.language||'c',sources:original.sources||[]}));
+  // Give cloned nodes and connections new IDs, preserving the relationships.
+  const ids=new Map();for(const node of copy.nodes){const old=node.id;node.id=id();ids.set(old,node.id);node.x+=35;node.y+=35;}
+  copy.edges=copy.edges.map(edge=>({...edge,id:id(),from:ids.get(edge.from),to:ids.get(edge.to)})).filter(edge=>edge.from&&edge.to);
+  const project=newProject(original.name+' copy',copy);projects.push(project);persist();renderProjectSelect();renderProjectHome();toast('プロジェクトを複製しました');
+});
+
+/* -------- v3: node search -------- */
+function matchesNode(n,q){
+  const fields=FIELDS.map(([key])=>String(n[key]||''));
+  return fields.join(' ').toLocaleLowerCase().includes(q.toLocaleLowerCase());
+}
+function renderSearchResults(){
+  const box=$('searchResults');
+  if(!searchQuery){box.hidden=true;box.innerHTML='';return;}
+  const results=nodes.filter(n=>matchesNode(n,searchQuery));
+  box.hidden=false;
+  box.innerHTML=results.length?results.slice(0,40).map(n=>`<button class="search-item" data-result="${escapeHtml(n.id)}"><strong>${escapeHtml(n.name)}</strong><span>${escapeHtml(n.responsibility||n.contract||'責務未設定')}</span></button>`).join(''):'<div class="search-empty">該当する関数はありません</div>';
+}
+function focusNode(nid){
+  const n=nodeById(nid);if(!n)return;
+  hideHome();$('analysisOverlay').hidden=true;
+  searchQuery='';$('nodeSearch').value='';renderSearchResults();
+  selected=nid;selectedEdge=null;connectMode=false;connectFrom=null;renderAll();
+  const canvas=$('canvas');canvas.scrollLeft=Math.max(0,(n.x-24)*zoom);canvas.scrollTop=Math.max(0,(n.y-24)*zoom);
+  $('inspectorBody').scrollTop=0;
+}
+$('nodeSearch').oninput=e=>{searchQuery=e.target.value.trim();renderNodes();renderSearchResults()};
+$('clearSearch').onclick=()=>{searchQuery='';$('nodeSearch').value='';renderNodes();renderSearchResults();$('nodeSearch').focus()};
+$('searchResults').addEventListener('click',e=>{const hit=e.target.closest('[data-result]');if(hit)focusNode(hit.dataset.result)});
+$('nodeSearch').addEventListener('keydown',e=>{
+  if(e.key==='Escape'){$('clearSearch').click();}
+  if(e.key==='Enter'){const n=nodes.find(x=>matchesNode(x,searchQuery));if(n)focusNode(n.id)}
+});
+document.addEventListener('pointerdown',e=>{if(!e.target.closest('.searchbox'))$('searchResults').hidden=true});
+$('nodeSearch').addEventListener('focus',renderSearchResults);
+
+/* -------- v3: dependency insights -------- */
+function graphAnalysis(scope,root){
+  const ids=new Set(nodes.map(n=>n.id));
+  const valid=edges.filter(e=>ids.has(e.from)&&ids.has(e.to)&&(scope==='all'||e.kind!=='state'));
+  const adjacency=new Map(nodes.map(n=>[n.id,[]]));
+  const incoming=new Map(nodes.map(n=>[n.id,0]));
+  const outgoing=new Map(nodes.map(n=>[n.id,0]));
+  const undirected=new Map(nodes.map(n=>[n.id,[]]));
+  for(const e of valid){
+    adjacency.get(e.from).push(e.to);
+    incoming.set(e.to,incoming.get(e.to)+1);
+    outgoing.set(e.from,outgoing.get(e.from)+1);
+    undirected.get(e.from).push(e.to);undirected.get(e.to).push(e.from);
+  }
+  let counter=0;const index=new Map(),low=new Map(),stack=[],onstack=new Set(),sccs=[];
+  function visit(v){
+    index.set(v,counter);low.set(v,counter);counter++;stack.push(v);onstack.add(v);
+    for(const w of adjacency.get(v)){
+      if(!index.has(w)){visit(w);low.set(v,Math.min(low.get(v),low.get(w)));}
+      else if(onstack.has(w))low.set(v,Math.min(low.get(v),index.get(w)));
+    }
+    if(low.get(v)===index.get(v)){
+      const group=[];let w;
+      do{w=stack.pop();onstack.delete(w);group.push(w)}while(w!==v);
+      sccs.push(group);
+    }
+  }
+  for(const n of nodes)if(!index.has(n.id))visit(n.id);
+  const cycles=sccs.filter(g=>g.length>1 || adjacency.get(g[0]).includes(g[0]));
+  const isolated=nodes.filter(n=>incoming.get(n.id)===0&&outgoing.get(n.id)===0).map(n=>n.id);
+  const hotspots=nodes.filter(n=>outgoing.get(n.id)>=4).sort((a,b)=>outgoing.get(b.id)-outgoing.get(a.id));
+  const popular=nodes.filter(n=>incoming.get(n.id)>=3).sort((a,b)=>incoming.get(b.id)-incoming.get(a.id));
+  const connected=[];const seen=new Set();
+  for(const n of nodes){
+    if(seen.has(n.id))continue;
+    const group=[],queue=[n.id];seen.add(n.id);
+    while(queue.length){const u=queue.shift();group.push(u);for(const w of undirected.get(u))if(!seen.has(w)){seen.add(w);queue.push(w)}}
+    connected.push(group);
+  }
+  const reach=new Set();
+  if(root && ids.has(root)){
+    const todo=[root];reach.add(root);
+    while(todo.length){for(const to of adjacency.get(todo.pop()))if(!reach.has(to)){reach.add(to);todo.push(to)}}
+  }
+  const unreachable=root&&ids.has(root)?nodes.filter(n=>!reach.has(n.id)).map(n=>n.id):[];
+  // Optional contract consistency: compare named dependencies written in a node memo with call arrows.
+  const byName=new Map(nodes.map(n=>[String(n.name).replace(/\(\)\s*$/,'').trim().toLowerCase(),n.id]));
+  const memoMissing=[];
+  if(scope==='call')for(const n of nodes){
+    for(const name of String(n.dependencies||'').split(/[,、\n]+/)){
+      const normalized=name.trim().replace(/\(\)\s*$/,'').toLowerCase();
+      const target=byName.get(normalized);
+      if(target&&target!==n.id&&!valid.some(e=>e.from===n.id&&e.to===target))memoMissing.push([n.id,target]);
+    }
+  }
+  return {valid,cycles,isolated,hotspots,popular,connected,unreachable,memoMissing,incoming,outgoing};
+}
+function tag(nid,suffix='',warn=false){
+  const name=nodeById(nid)?.name||'?';
+  return `<button class="analysis-tag ${warn?'analysis-warn':''}" data-focus-node="${escapeHtml(nid)}">${escapeHtml(name)}${suffix?' · '+escapeHtml(suffix):''}</button>`;
+}
+function insight(title,description,html){return `<section class="analysis-section"><h3>${title}</h3><p>${description}</p><div class="analysis-list">${html||'<span class="analysis-ok">✓ 該当なし</span>'}</div></section>`}
+function renderAnalysis(){
+  const scope=$('analysisScope').value,root=$('analysisRoot').value;
+  const r=graphAnalysis(scope,root);
+  $('analysisProjectName').textContent=(projects.find(p=>p.id===currentProjectId)?.name||'プロジェクト')+' の関数グラフを分析';
+  const stats=[['関数',nodes.length],['接続',r.valid.length],['循環グループ',r.cycles.length],['孤立した関数',r.isolated.length]];
+  $('analysisStats').innerHTML=stats.map(([label,value])=>`<div class="stat-card"><strong>${value}</strong><small>${label}</small></div>`).join('');
+  const cycles=r.cycles.map(g=>'<div class="analysis-list">'+g.map(nid=>tag(nid,'',true)).join('')+'</div>').join('');
+  const isolated=r.isolated.map(nid=>tag(nid)).join('');
+  const hotspot=r.hotspots.map(n=>tag(n.id,'呼び出し '+r.outgoing.get(n.id))).join('');
+  const popular=r.popular.map(n=>tag(n.id,'参照元 '+r.incoming.get(n.id))).join('');
+  const unreach=r.unreachable.map(nid=>tag(nid,'未到達',true)).join('');
+  const mismatch=r.memoMissing.map(([from,to])=>tag(from,'→ '+(nodeById(to)?.name||'?'),true)).join('');
+  let sections=[
+    insight('循環依存','呼び出しが巡回している関数グループを表示します。再帰処理など、意図した循環もあり得ます。',cycles),
+    insight('孤立した関数','入る矢印も出る矢印もない関数です。接続忘れの確認に使えます。',isolated),
+    insight('呼び出し先が多い関数','4本以上の接続を外向きに持つ関数です。責務が集中していないか確認できます。',hotspot),
+    insight('参照が集中する関数','3本以上の接続が入っている関数です。変更時の影響範囲に注意します。',popular)
+  ];
+  if(root)sections.push(insight('入口から到達できない関数','指定した関数を入口に矢印をたどっても到達しない関数です。',unreach));
+  if(scope==='call')sections.push(insight('依存メモと矢印の不一致','「依存する関数」欄で既存ノードと名前が完全一致するもののうち、呼び出し矢印がない組み合わせです。',mismatch));
+  const components=r.connected.filter(c=>c.length>1);
+  if(r.connected.length>1)sections.push(insight('接続が分かれたグループ',r.connected.length+' 個の独立した接続グループがあります。',components.map((g,i)=>'<div class="analysis-list"><strong style="font-size:11px;color:#678">群 '+(i+1)+'</strong> '+g.map(nid=>tag(nid)).join('')+'</div>').join('')));
+  $('analysisBody').innerHTML=sections.join('');
+}
+function openAnalysis(){
+  const root=$('analysisRoot');const oldRoot=root.value;
+  root.innerHTML='<option value="">指定しない</option>'+nodes.map(n=>`<option value="${escapeHtml(n.id)}">${escapeHtml(n.name)}</option>`).join('');
+  const recommended=nodes.find(n=>/^(ft_printf|main|push_swap|so_long)\s*\(\)/i.test(n.name));
+  root.value=nodes.some(n=>n.id===oldRoot)?oldRoot:(recommended?.id||'');
+  $('analysisOverlay').hidden=false;renderAnalysis();
+}
+$('analysisBtn').onclick=openAnalysis;
+$('closeAnalysis').onclick=()=>{$('analysisOverlay').hidden=true};
+$('analysisOverlay').addEventListener('pointerdown',e=>{if(e.target===$('analysisOverlay'))$('analysisOverlay').hidden=true});
+$('analysisScope').onchange=renderAnalysis;
+$('analysisRoot').onchange=renderAnalysis;
+$('analysisBody').addEventListener('click',e=>{const hit=e.target.closest('[data-focus-node]');if(hit)focusNode(hit.dataset.focusNode)});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('analysisOverlay').hidden)$('analysisOverlay').hidden=true});
+
+/* -------- v3: backup all projects, for Safari-to-home-screen migration -------- */
+function downloadJSON(object,name){
+  const blob=new Blob([JSON.stringify(object,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;
+  document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
+}
+$('exportAllBtn').onclick=()=>{
+  persist();downloadJSON({format:'function-canvas-workspace',version:3,projects,currentProjectId},'function-canvas-all-projects.json');
+  toast('全プロジェクトを書き出しました');
+};
+$('importAllBtn').onclick=()=>$('importAllFile').click();
+$('importAllFile').onchange=async e=>{
+  const file=e.target.files?.[0];if(!file)return;
+  try{
+    const backup=JSON.parse(await file.text());
+    if(!Array.isArray(backup.projects)||backup.projects.length===0||backup.projects.length>100)throw new Error('プロジェクト形式が不正です');
+    const projectIds=new Set();let count=0;
+    for(const p of backup.projects){
+      if(typeof p.name!=='string'||typeof p.id!=='string'||projectIds.has(p.id)||!Array.isArray(p.nodes)||!Array.isArray(p.edges)||p.nodes.length>400)throw new Error('プロジェクトデータが不正です');
+      projectIds.add(p.id);count+=p.nodes.length;
+      const nodeIds=new Set();
+      for(const n of p.nodes){if(typeof n.id!=='string'||typeof n.name!=='string'||!Number.isFinite(n.x)||!Number.isFinite(n.y)||nodeIds.has(n.id))throw new Error('ノードデータが不正です');nodeIds.add(n.id);n.x=Math.max(0,Math.min(WORLD_W-WIDTH,n.x));n.y=Math.max(0,Math.min(WORLD_H-HEIGHT,n.y))}
+      p.edges=p.edges.filter(edge=>edge&&nodeIds.has(edge.from)&&nodeIds.has(edge.to)&&edge.from!==edge.to);
+    }
+    if(count>4000)throw new Error('データが多すぎます');
+    if(!confirm('現在の全プロジェクトを読み込みファイルの内容で置き換えます。先に全プロジェクトを保存しておくことをおすすめします。続けますか？'))return;
+    projects=backup.projects;
+    currentProjectId=projectIds.has(backup.currentProjectId)?backup.currentProjectId:projects[0].id;
+    const active=projects.find(p=>p.id===currentProjectId);
+    nodes=active.nodes;edges=active.edges;selected=null;selectedEdge=null;
+    searchQuery='';$('nodeSearch').value='';persist();renderProjectSelect();renderAll();renderProjectHome();
+    toast('全プロジェクトを読み込みました');
+  }catch(err){alert('読み込みできませんでした：'+err.message)}finally{e.target.value=''}
+};
+
+/* Keep old per-project JSON export/import; manage offline/PWA shell separately. */
+if('serviceWorker' in navigator && location.protocol==='https:'){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+}
+
+/* -------- v4: source projects, static analysis, mobile drag-to-connect -------- */
+function currentProject(){return projects.find(p=>p.id===currentProjectId)}
+function ensureProject(p){if(!p.language)p.language='c';if(!Array.isArray(p.sources))p.sources=[];return p}
+function updateUnresolvedCount(){
+ const count=nodes.reduce((n,node)=>n+(node.sourceMissing?0:(node.unresolvedCalls||[]).length),0);
+ $('unresolvedCount').textContent=count;$('unresolvedBtn').title=count+'件の未解決呼び出し';
+}
+$('languageSelect').addEventListener('change',e=>{
+ const p=ensureProject(currentProject()),old=p.language,next=e.target.value;
+ if(old===next)return;
+ if(p.sources.length&&!confirm('ソース解析の言語を切り替えます。現在のノードとメモは保持しますが、新しい言語のソースを取り込むまで旧データは表示され続けます。切り替えますか？')){
+   e.target.value=old;return;
+ }
+ p.language=next;scheduleSave();toast((next==='c'?'C':'Python')+'モードに切り替えました');
+});
+function sourceLabel(path){return String(path).replace(/^\/+/, '').slice(0,240)}
+function calculateStaging(parsed,project){
+ const map=new Map(nodes.filter(n=>n.sourceKey).map(n=>[n.sourceKey,n]));
+ const byName=name=>nodes.filter(n=>!n.sourceKey&&n.name.replace(/\(.*\)\s*$/,'').trim()===name);
+ const defNameCounts=new Map();for(const d of parsed.definitions)defNameCounts.set(d.name,(defNameCounts.get(d.name)||0)+1);
+ let fresh=0,updated=0;
+ for(const d of parsed.definitions){let old=map.get(d.key);
+   if(!old&&defNameCounts.get(d.name)===1){const candidates=byName(d.name);if(candidates.length===1)old=candidates[0]}
+   if(old)updated++;else fresh++;
+ }
+ const currentKeys=new Set(parsed.definitions.map(d=>d.key));
+ const stale=nodes.filter(n=>n.sourceKey&&!currentKeys.has(n.sourceKey)).length;
+ return {fresh,updated,stale};
+}
+async function readSourceSelection(inputFiles,language){
+ const chosen=new Map(),warnings=[];
+ let total=0;
+ function isValid(path){return language==='c'?/\.(?:c|h)$/i.test(path):/\.py$/i.test(path)}
+ function insert(path,content){
+   path=sourceLabel(path);
+   if(!isValid(path)||path.includes('__MACOSX/')||path.split('/').some(x=>x.startsWith('.')))return;
+   if(content.length>400000)throw new Error(path+' が大きすぎます（1ファイル40万文字まで）');
+   total+=content.length;
+   if(total>1700000)throw new Error('ソースの合計が大きすぎます（約170万文字まで）');
+   chosen.set(path,{path,text:content,language});
+   if(chosen.size>150)throw new Error('解析できるファイルは最大150件です');
+ }
+ for(const file of inputFiles){
+   if(/\.zip$/i.test(file.name)){
+     if(typeof JSZip==='undefined')throw new Error('ZIP解析ライブラリを読み込めません');
+     if(file.size>8*1024*1024)throw new Error('ZIPファイルは8MB以下にしてください');
+     const archive=await JSZip.loadAsync(file);
+     for(const item of Object.values(archive.files)){
+       if(item.dir||!isValid(item.name)||item.name.includes('__MACOSX/'))continue;
+       if(item._data?.uncompressedSize>400000)throw new Error(item.name+' が大きすぎます');
+       insert(item.name,await item.async('string'));
+     }
+   }else if(isValid(file.name))insert(file.webkitRelativePath||file.name,await file.text());
+   else warnings.push(file.name+' は選択中の言語に対応していません');
+ }
+ return {files:[...chosen.values()],warnings};
+}
+function closeStage(){stagedSource=null;$('sourceImportOverlay').hidden=true;$('sourceFileInput').value=''}
+$('sourceImportBtn').onclick=()=>$('sourceFileInput').click();
+$('cancelSourceImport').onclick=closeStage;$('cancelSourceImport2').onclick=closeStage;
+$('sourceImportOverlay').addEventListener('pointerdown',e=>{if(e.target===$('sourceImportOverlay'))closeStage()});
+$('sourceFileInput').onchange=async e=>{
+ const files=[...e.target.files];if(!files.length)return;
+ try{
+   const project=ensureProject(currentProject());
+   const {files:newFiles,warnings}=await readSourceSelection(files,project.language);
+   if(!newFiles.length)throw new Error('現在の言語に対応するソースファイルがありません');
+   const merged=new Map(project.sources.filter(f=>(f.language||project.language)===project.language).map(f=>[f.path,{...f}]));
+   for(const f of newFiles)merged.set(f.path,f);
+   const all=[...merged.values()];
+   const analysis=FCParser.parseSources(all,project.language);
+   if(analysis.definitions.length>400)throw new Error('検出した関数が400件を超えています');
+   const stats=calculateStaging(analysis,project);
+   stagedSource={projectId:project.id,files:all,analysis,stats,uploaded:newFiles,warnings};
+   $('importSummary').innerHTML=`<div class="v4-muted">言語：<strong>${project.language==='c'?'C':'Python'}</strong>。選択したファイルを追加・更新し、それ以外の読み込み済みファイルを保持してプロジェクト全体を再解析します。</div>
+     <div class="v4-stat"><span>追加 ${stats.fresh} 関数</span><span>既存と照合 ${stats.updated} 関数</span><span>見つからなくなった定義 ${stats.stale} 件</span><span>呼び出し線 ${analysis.links.length} 件</span><span>未解決 ${analysis.unresolved.length} 件</span></div>
+     <div class="v4-card"><strong>今回選択したファイル</strong>${newFiles.map(f=>`<div class="v4-file">${escapeHtml(f.path)}</div>`).join('')}</div>
+     <div class="v4-warning">手書きの責務・契約・ノード配置は保持します。再解析で消えた関数は削除せず、「ソース上に見つからない」と表示します。自動生成された矢印は新しい解析結果に置き換えます。手動の矢印は維持します。</div>
+     ${warnings.length?`<div class="v4-warning">除外：${escapeHtml(warnings.join('、'))}</div>`:''}
+     <div class="v4-muted">この解析は静的な推定です。Cの関数ポインタやマクロ、Pythonの動的呼び出しなどは完全には解決できません。コードは外部に送信しません。</div>`;
+   $('sourceImportOverlay').hidden=false;
+ }catch(err){alert('ソースの読み込みに失敗しました：'+err.message);e.target.value=''}
+};
+function syncSourceData(stage){
+ const {files,analysis}=stage,defs=analysis.definitions;
+ const existingByKey=new Map(nodes.filter(n=>n.sourceKey).map(n=>[n.sourceKey,n]));
+ const nameCounts=new Map();for(const d of defs)nameCounts.set(d.name,(nameCounts.get(d.name)||0)+1);
+ const idByKey=new Map();const remainingKeys=new Set(defs.map(d=>d.key));
+ let added=0;
+ for(const d of defs){
+   let n=existingByKey.get(d.key);
+   if(!n&&nameCounts.get(d.name)===1){
+     const candidates=nodes.filter(x=>!x.sourceKey&&x.name.replace(/\(.*\)\s*$/,'').trim()===d.name);
+     if(candidates.length===1)n=candidates[0];
+   }
+   if(!n){
+     const k=nodes.length;
+     n={id:id(),name:d.qualName+'()',responsibility:'',input:'',changes:'',unchanged:'',dependencies:'',preconditions:'',contract:'',type:'control',x:90+(k%5)*315,y:75+Math.floor(k/5)*225};
+     nodes.push(n);added++;
+   }
+   if(!n.input||n.input===n.sourceInput)n.input=d.parameters;
+   n.generated=true;n.sourceMissing=false;n.sourceKey=d.key;n.sourceFile=d.path;
+   n.sourceLine=d.line;n.sourceEnd=d.endLine;n.sourceLanguage=d.language;n.sourceInput=d.parameters;
+   n.unresolvedCalls=analysis.unresolved.filter(x=>x.fromKey===d.key);
+   idByKey.set(d.key,n.id);
+ }
+ for(const n of nodes){if(n.sourceKey&&!remainingKeys.has(n.sourceKey)){
+   n.sourceMissing=true;n.unresolvedCalls=[];
+ }}
+ const manual=edges.filter(e=>e.origin!=='auto');
+ const taken=new Set(manual.map(e=>e.from+'::'+e.to));
+ const generated=[];
+ for(const link of analysis.links){const from=idByKey.get(link.fromKey),to=idByKey.get(link.toKey);
+   if(!from||!to||from===to)continue;
+   const pair=from+'::'+to;if(taken.has(pair))continue;
+   taken.add(pair);generated.push({id:id(),from,to,kind:'call',origin:'auto'});
+ }
+ edges=[...manual,...generated];
+ const p=ensureProject(currentProject());p.nodes=nodes;p.edges=edges;p.sources=files;
+ selected=null;selectedEdge=null;connectMode=false;connectFrom=null;
+ persist();renderAll();updateUnresolvedCount();setTimeout(()=>{if(nodes.length)fit()},40);
+ toast('解析を反映しました：'+defs.length+' 関数 / '+generated.length+' 自動接続');
+ return {added,generated:generated.length};
+}
+$('applySourceImport').onclick=()=>{
+ if(!stagedSource||stagedSource.projectId!==currentProjectId){alert('解析対象のプロジェクトが変更されています。再度読み込んでください');return}
+ const result=syncSourceData(stagedSource);closeStage();
+};
+function openSourceView(filePath,fromLine=1,toLine=1){
+ const p=ensureProject(currentProject()),file=p.sources.find(s=>s.path===filePath);
+ if(!file){alert('このソースファイルは保存されていません。ソースをもう一度読み込んでください');return}
+ const lines=file.text.split('\n'),limit=450;
+ const start=lines.length<=limit?1:Math.max(1,fromLine-100);
+ const end=lines.length<=limit?lines.length:Math.min(lines.length,start+limit-1);
+ $('sourceViewerTitle').textContent=filePath;
+ $('sourceViewerSubtitle').textContent=fromLine+' 行目'+(toLine>fromLine?' ～ '+toLine+' 行目':'')+' / 全 '+lines.length+' 行';
+ let html='';
+ if(start>1)html+=`<div class="source-meta">周辺${limit}行を表示中（先頭${start-1}行は省略）</div>`;
+ for(let i=start;i<=end;i++)html+=`<div class="source-line ${i>=fromLine&&i<=toLine?'hl':''}" data-line="${i}"><span class="ln">${i}</span><span class="content">${escapeHtml(lines[i-1])||' '}</span></div>`;
+ if(end<lines.length)html+='<div class="source-meta">残り '+(lines.length-end)+' 行は省略</div>';
+ $('sourceCodeBody').innerHTML=html;$('sourceViewerOverlay').hidden=false;
+ const hit=$('sourceCodeBody').querySelector(`[data-line="${fromLine}"]`);
+ if(hit)setTimeout(()=>hit.scrollIntoView({block:'start',inline:'nearest'}),20);
+}
+$('closeSourceViewer').onclick=()=>$('sourceViewerOverlay').hidden=true;
+$('sourceViewerOverlay').addEventListener('pointerdown',e=>{if(e.target===$('sourceViewerOverlay'))$('sourceViewerOverlay').hidden=true});
+function renderUnresolved(){
+ const list=nodes.filter(n=>!n.sourceMissing).flatMap(n=>(n.unresolvedCalls||[]).map(c=>({...c,nodeId:n.id})));
+ $('unresolvedBody').innerHTML=list.length?`<div class="v4-muted">${list.length}件の候補です。標準ライブラリ呼び出しや解析対象外ファイルも含まれます。</div>`+list.slice(0,350).map(c=>`<div class="unresolved-entry"><div><code>${escapeHtml(c.target)}()</code><small>${escapeHtml(c.path)}:${c.line} — ${escapeHtml(c.reason)}</small></div><button class="btn" data-unresolved-node="${escapeHtml(c.nodeId)}">関数を見る</button></div>`).join(''):'<div class="analysis-ok">未解決の呼び出し候補はありません。</div>';
+}
+$('unresolvedBtn').onclick=()=>{renderUnresolved();$('unresolvedOverlay').hidden=false};
+$('closeUnresolved').onclick=()=>$('unresolvedOverlay').hidden=true;
+$('unresolvedOverlay').addEventListener('pointerdown',e=>{if(e.target===$('unresolvedOverlay'))$('unresolvedOverlay').hidden=true});
+$('unresolvedBody').addEventListener('click',e=>{const b=e.target.closest('[data-unresolved-node]');if(b){$('unresolvedOverlay').hidden=true;focusNode(b.dataset.unresolvedNode)}});
+
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeStage();$('sourceViewerOverlay').hidden=true;$('unresolvedOverlay').hidden=true}});
+
+// V3 backups and projects are still accepted: keep the original storage key.
+$('exportBtn').onclick=()=>{
+ persist();const p=ensureProject(currentProject());
+ downloadJSON({format:'function-canvas',version:4,language:p.language,sources:p.sources,nodes,edges},p.name.replace(/[^A-Za-z0-9_-]/g,'_')+'.json');
+ toast('このプロジェクトをJSONに保存しました');
+};
+$('importFile').onchange=async event=>{
+ const file=event.target.files?.[0];if(!file)return;
+ try{
+   const data=JSON.parse(await file.text());
+   if(!Array.isArray(data.nodes)||!Array.isArray(data.edges)||data.nodes.length>400)throw new Error('ノード形式が不正です');
+   const ids=new Set();for(const n of data.nodes){
+     if(typeof n.id!=='string'||typeof n.name!=='string'||!Number.isFinite(n.x)||!Number.isFinite(n.y)||ids.has(n.id))throw new Error('ノードが不正です');
+     ids.add(n.id);n.x=Math.max(0,Math.min(WORLD_W-WIDTH,n.x));n.y=Math.max(0,Math.min(WORLD_H-HEIGHT,n.y));
+   }
+   if(!confirm('現在のプロジェクトをJSONの内容で置き換えますか？（先にバックアップをおすすめします）'))return;
+   const p=ensureProject(currentProject());p.language=['c','py'].includes(data.language)?data.language:p.language;
+   p.sources=Array.isArray(data.sources)?data.sources.filter(s=>typeof s.path==='string'&&typeof s.text==='string').slice(0,150):[];
+   nodes=data.nodes;edges=data.edges.filter(e=>e&&ids.has(e.from)&&ids.has(e.to)).map(e=>({...e,origin:e.origin==='auto'?'auto':'manual',kind:e.kind==='state'?'state':'call'}));
+   $('languageSelect').value=p.language;selected=null;selectedEdge=null;persist();renderAll();updateUnresolvedCount();setTimeout(fit,50);toast('プロジェクトを復元しました');
+ }catch(err){alert('読み込み失敗：'+err.message)}finally{event.target.value=''}
+};
+
+// Touch and mouse: drag a node's port to create an arrow; drag an arrow / its endpoint to reconnect.
+function startEdgeDrag(ev,options){
+ if(edgeDrag)return;
+ const anchor=options.type==='new'?nodeById(options.from):null;
+ edgeDrag={...options,pointerId:ev.pointerId,startX:ev.clientX,startY:ev.clientY,clientX:ev.clientX,clientY:ev.clientY,moved:false};
+ window._fcIgnoreEdgeClickUntil=Date.now()+200;
+ try{$('canvas').setPointerCapture(ev.pointerId)}catch(err){}
+ drawEdgePreview(ev.clientX,ev.clientY);
+}
+function worldPoint(clientX,clientY){const rect=$('world').getBoundingClientRect();return {x:(clientX-rect.left)/zoom,y:(clientY-rect.top)/zoom}}
+function drawEdgePreview(clientX,clientY){
+ if(!edgeDrag)return;
+ let origin;
+ if(edgeDrag.type==='new'){const n=nodeById(edgeDrag.from);if(!n)return;origin={x:n.x+WIDTH,y:n.y+HEIGHT/2}}
+ else {const e=edges.find(x=>x.id===edgeDrag.edgeId);if(!e)return;const n=nodeById(edgeDrag.end==='to'?e.from:e.to);if(!n)return;origin={x:n.x+(edgeDrag.end==='to'?WIDTH:0),y:n.y+HEIGHT/2}}
+ const end=worldPoint(clientX,clientY);
+ let x1=origin.x,y1=origin.y,x2=end.x,y2=end.y;
+ if(edgeDrag.type==='existing'&&edgeDrag.end==='from'){x1=end.x;y1=end.y;x2=origin.x;y2=origin.y}
+ const m=(x1+x2)/2,d=`M ${x1} ${y1} C ${m} ${y1}, ${m} ${y2}, ${x2} ${y2}`;
+ let p=$('dragPreview');if(!p){p=document.createElementNS('http://www.w3.org/2000/svg','path');p.id='dragPreview';p.setAttribute('class','edge-preview');$('edgeLayer').appendChild(p)}p.setAttribute('d',d);
+}
+window.addEventListener('pointermove',e=>{
+ if(!edgeDrag||edgeDrag.pointerId!==e.pointerId)return;
+ const dd=Math.abs(e.clientX-edgeDrag.startX)+Math.abs(e.clientY-edgeDrag.startY);
+ if(dd>8)edgeDrag.moved=true;
+ edgeDrag.clientX=e.clientX;edgeDrag.clientY=e.clientY;drawEdgePreview(e.clientX,e.clientY);
+},true);
+window.addEventListener('pointerup',e=>{
+ if(!edgeDrag||edgeDrag.pointerId!==e.pointerId)return;
+ const config=edgeDrag;edgeDrag=null;
+ const target=document.elementFromPoint(e.clientX,e.clientY)?.closest('.node');const targetId=target?.dataset.id;
+ if(config.type==='new'){
+   if(!config.moved){connectMode=true;connectFrom=config.from;selected=null;selectedEdge=null;toast('接続先の関数をタップしてください')}
+   else if(targetId&&targetId!==config.from){
+     if(edges.some(a=>a.from===config.from&&a.to===targetId))toast('その接続は既に存在します');
+     else{edges.push({id:id(),from:config.from,to:targetId,kind:'call',origin:'manual'});selectedEdge=edges[edges.length-1].id;selected=null;scheduleSave();toast('矢印を作成しました')}
+   }
+ }else{
+   const link=edges.find(a=>a.id===config.edgeId);
+   if(link&&config.moved&&targetId){
+     const from=config.end==='from'?targetId:link.from,to=config.end==='to'?targetId:link.to;
+     if(from!==to&&!edges.some(a=>a.id!==link.id&&a.from===from&&a.to===to)){
+       link.from=from;link.to=to;link.origin='manual';scheduleSave();toast('矢印の接続先を変更しました');
+     }else toast('同じノードや重複した接続には変更できません');
+   }
+   selectedEdge=config.edgeId;selected=null;
+ }
+ window._fcIgnoreEdgeClickUntil=Date.now()+300;
+ renderAll();updateUnresolvedCount();
+},true);
+
+load();const active=projects.find(p=>p.id===currentProjectId);if(active){if(!active.language)active.language="c";if(!Array.isArray(active.sources))active.sources=[];$("languageSelect").value=active.language;}renderAll();updateUnresolvedCount();setZoom(.8);setTimeout(fit,120);showHome();
+})();
+
+
+</script></body></html>
