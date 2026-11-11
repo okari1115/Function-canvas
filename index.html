@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover" />
-<title>Function Canvas v5.1 — 関数設計マップ</title>
+<title>Function Canvas v5.2 — 関数設計マップ</title>
 <link rel="manifest" href="./manifest.webmanifest" />
 <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
 <meta name="description" content="42課題の関数設計と依存関係を管理するワークスペース" />
@@ -230,10 +230,88 @@ body.is-home .app{display:none!important}
 @media(max-width:900px){.arch-board{padding:20px 19px 60px}.arch-overview-head{display:block}.arch-metrics{margin-top:10px}.arch-overview-grid{grid-template-columns:repeat(2,235px);width:500px;gap:34px 30px}.arch-group-card{width:235px}.arch-detail-head{min-width:650px}}
 @media(max-width:680px){.arch-overview-grid{grid-template-columns:1fr;width:280px}.arch-group-card{width:280px}.arch-board{padding:19px 15px 42px}.arch-overview-head h2,.arch-detail-heading h2{font-size:20px}.arch-metrics strong{font-size:14px}.arch-group-card{min-height:180px}.arch-detail-heading{margin:10px 0}.arch-flow{gap:33px}.arch-lane{flex-basis:225px;width:225px}.arch-toolbar{gap:4px}}
 
+
+/* v5.2: Compact 13-inch iPad-first chrome and larger, pannable workspace */
+header.compact-header{min-height:0;height:46px;flex:0 0 46px;padding:3px 11px;gap:8px;flex-wrap:nowrap;justify-content:space-between}
+.compact-header .project-switcher{flex-wrap:nowrap;padding:2px 4px;gap:5px;border:0;background:transparent;min-width:0}
+.compact-header .project-switcher select{height:34px;min-width:108px;max-width:215px;flex:1 1 auto;padding:5px 8px;font-size:12px}
+.compact-header .language-chooser select{min-width:66px;max-width:85px;height:34px;padding:5px 6px}
+.compact-header .header-actions{flex-wrap:nowrap;margin-left:auto;gap:6px}
+.compact-header .btn{padding:6px 9px;min-height:34px;font-size:11px}
+.compact-menu{position:relative;display:block;flex:0 0 auto;z-index:45}
+.compact-menu>summary{list-style:none;display:flex;align-items:center;justify-content:center;cursor:pointer;white-space:nowrap;user-select:none}
+.compact-menu>summary::-webkit-details-marker{display:none}
+.compact-menu[open]>summary{background:#e9f1ff;border-color:#9cb9ed;color:#315fa9}
+.compact-menu-panel{position:absolute;right:0;top:calc(100% + 7px);min-width:218px;max-height:min(65dvh,480px);overflow:auto;display:flex;flex-direction:column;gap:5px;padding:9px;background:white;border:1px solid #d9e4f2;border-radius:12px;box-shadow:0 16px 35px #132a4e30;z-index:90}
+.compact-menu-panel .btn{text-align:left;width:100%;font-size:12px;min-height:36px}
+.toolbar{height:48px;min-height:48px;flex:0 0 48px;display:flex;flex-wrap:nowrap!important;justify-content:flex-start;align-items:center;gap:5px;padding:4px 8px;overflow-x:auto;overflow-y:visible;scrollbar-width:thin;scrollbar-color:#ced8e8 transparent}
+.toolbar .btn{min-height:33px;padding:6px 8px;font-size:11px;border-radius:7px}
+.toolbar .arch-toolbar{flex-shrink:0;gap:4px;padding-right:5px}
+.toolbar .arch-nav-label{display:none}
+.toolbar .toolbar-group{flex:0 0 auto;display:flex;flex-wrap:nowrap;gap:4px}
+.toolbar .searchbox{flex:1 1 125px;min-width:108px;max-width:220px}
+.toolbar .searchbox input{height:34px;padding:6px 24px 6px 9px;font-size:11px}
+.toolbar .search-clear{top:1px}
+.toolbar .help-pill{font-size:10px;white-space:nowrap}
+.toolbar .compact-menu-panel{top:calc(100% + 7px)}
+/* Toolbar uses horizontal scrolling; dropdowns are viewport-aligned so they are not clipped. */
+.toolbar .compact-menu-panel{position:fixed;top:99px;right:13px;z-index:110;min-width:234px}
+.toolbar .search-results{position:fixed;top:99px;right:12px;left:auto;width:min(340px,85vw);max-height:45dvh;z-index:120}
+.mobile-controls[hidden]{display:none!important}
+.mobile-controls{padding:7px 9px;max-height:126px;overflow:auto;gap:7px}
+.mobile-controls label{font-size:11px;flex-basis:120px}
+.mobile-controls select{font-size:14px;padding:6px;min-height:34px}
+.mobile-controls .btn{min-height:35px;font-size:11px}
+.app{grid-template-columns:minmax(0,1fr) clamp(278px,25vw,338px)}
+.app.inspector-collapsed{grid-template-columns:minmax(0,1fr)}
+.app.inspector-collapsed .inspector{display:none!important}
+.inspector-head{padding:10px 15px 9px}
+.inspector-head h2{font-size:14px}
+.inspector-head p{font-size:10px;margin-top:3px}
+.inspector-body{padding:12px 15px 22px}
+.canvas-hint{font-size:10px;padding:5px 8px;top:5px;left:8px}
+.legend-strip{font-size:9px;margin:4px 7px 0;padding:4px 7px}
+.canvas-wrap{cursor:grab}
+.canvas-wrap.is-panning{cursor:grabbing;user-select:none}
+.canvas-wrap.is-panning *{cursor:grabbing!important}
+.canvas-wrap .node{cursor:grab}
+.canvas-wrap .node:active{cursor:grabbing}
+.canvas-wrap .arch-board{cursor:default}
+@media(max-width:1200px){
+ .compact-header .project-switcher{gap:3px}
+ .compact-header .project-switcher select{max-width:165px}
+ .toolbar .arch-toolbar .btn{font-size:10px;padding:6px 7px}
+ .toolbar .toolbar-primary .btn{font-size:10px;padding:6px 7px}
+}
+@media(max-width:900px){
+ header.compact-header{height:44px;min-height:44px;flex-basis:44px;padding:3px 6px;gap:4px}
+ .compact-header .project-switcher{width:auto;order:0;min-width:0}
+ .compact-header .project-switcher select{min-width:90px;max-width:135px}
+ .compact-header .header-actions{gap:3px}
+ .compact-header .header-save{display:none}
+ .app{grid-template-columns:minmax(0,1fr) 268px}
+ .toolbar{height:45px;min-height:45px;flex-basis:45px;padding:3px 5px}
+ .main{min-height:0!important;height:auto!important}
+}
+@media(max-width:680px){
+ header.compact-header{flex-wrap:nowrap;min-height:44px}
+ .compact-header .project-switcher{flex:1 1 0;min-width:0}
+ .compact-header .project-switcher select{max-width:none;min-width:0;width:80px}
+ .compact-header .language-chooser{font-size:10px}
+ .compact-header .language-chooser select{min-width:55px}
+ .compact-header .header-actions{flex:0 0 auto}
+ .toolbar{overflow-x:auto}
+ .toolbar .compact-menu-panel,.toolbar .search-results{top:95px}
+ .app{display:flex;flex-direction:column}
+ .app.inspector-collapsed .main{flex:1 1 100%}
+ .inspector{flex:0 0 34%;min-height:0!important}
+ .main{flex:1 1 66%;min-height:0!important}
+ .toolbar .searchbox{min-width:130px}
+}
 </style>
 </head>
 <body>
-<header><div class="brand"><div class="logo">ƒ</div><div><h1>Function Canvas</h1><p>C / Pythonの関数と依存関係を、図で設計する</p></div></div><div class="project-switcher"><button class="btn home-link" id="homeBtn">▦ プロジェクト一覧</button><label for="projectSelect">プロジェクト</label><select id="projectSelect" aria-label="作業するプロジェクト"></select><button class="btn" id="newProjectBtn">＋ 新規</button><label class="language-chooser" for="languageSelect">言語 <select id="languageSelect" aria-label="解析する言語"><option value="c">C</option><option value="py">Python</option></select></label><button class="btn" id="renameProjectBtn">名前変更</button><button class="btn danger" id="deleteProjectBtn">削除</button></div><div class="header-actions"><button class="btn" id="exportBtn">↓ JSON保存</button><button class="btn" id="importBtn">↑ 読み込み</button><input class="file-input" type="file" id="importFile" accept=".json,application/json"/><button class="btn danger" id="resetBtn">サンプルに戻す</button></div></header>
+<header class="compact-header"><div class="project-switcher"><button class="btn home-link" id="homeBtn" title="プロジェクト一覧へ">▦ 一覧</button><label class="sr-only" for="projectSelect">プロジェクト</label><select id="projectSelect" aria-label="作業するプロジェクト"></select><button class="btn" id="newProjectBtn" title="プロジェクトを新規作成">＋ 新規</button><label class="language-chooser" for="languageSelect">言語 <select id="languageSelect" aria-label="解析する言語"><option value="c">C</option><option value="py">Python</option></select></label></div><div class="header-actions"><button class="btn header-save" id="exportBtn">↓ JSON保存</button><details class="compact-menu" id="projectMenu"><summary class="btn" aria-label="プロジェクト操作メニュー">プロジェクト操作 ▾</summary><div class="compact-menu-panel"><button class="btn" id="renameProjectBtn">名前変更</button><button class="btn" id="importBtn">↑ JSON読み込み</button><input class="file-input" type="file" id="importFile" accept=".json,application/json"/><button class="btn danger" id="resetBtn">ft_printfサンプルに戻す</button><button class="btn danger" id="deleteProjectBtn">プロジェクトを削除</button></div></details></div></header>
 
 <section class="home-screen" id="homeScreen" hidden aria-label="プロジェクト一覧">
   <div class="home-inner">
@@ -285,14 +363,13 @@ body.is-home .app{display:none!important}
   </div>
 </section>
 
-<div class="app"><main class="main"><div class="toolbar"><div class="arch-toolbar"><button class="btn active" id="archOverviewBtn" title="機能グループで全体を見る">◫ 機能マップ</button><button class="btn" id="archRawBtn" title="従来の全関数キャンバス">⌘ 通常キャンバス</button><span class="arch-nav-label" id="archNavLabel">機能マップ</span></div><div class="toolbar-group"><button class="btn primary" id="addBtn">＋ 新しい関数</button><button class="btn" id="connectBtn">↗ 接続する</button><button class="btn" id="edgeListBtn">↗ 接続一覧・削除</button><button class="btn danger" id="quickDeleteEdge" hidden>選択した矢印を削除</button><button class="btn" id="sourceImportBtn">⇧ ソース / ZIP / TAR</button><input id="sourceFileInput" class="file-input" type="file" multiple accept=".c,.h,.py,.zip,.tar.gz,.tgz,application/zip"/><button class="btn" id="layoutBtn">▦ 自動整列</button><button class="btn" id="collapseAllBtn">▸ 全部たたむ</button><button class="btn" id="expandAllBtn">▾ 全部開く</button><button class="btn" id="analysisBtn">◎ 依存関係の分析</button><button class="btn" id="unresolvedBtn">? 未解決 <span id="unresolvedCount">0</span></button></div>
-<div class="searchbox"><label class="sr-only" for="nodeSearch">関数を検索</label><input id="nodeSearch" autocomplete="off" placeholder="⌕ 関数を検索（名前・責務・契約）" /><button id="clearSearch" class="search-clear" aria-label="検索を消す">×</button><div class="search-results" id="searchResults" hidden></div></div><div class="toolbar-group"><span class="help-pill" id="zoomLabel">100%</span><button class="btn small" id="zoomOut" aria-label="縮小">－</button><button class="btn small" id="zoomIn" aria-label="拡大">＋</button><button class="btn small" id="fitBtn">全体表示</button></div></div><div class="mobile-controls" id="mobileControls">
+<div class="app" id="workspace"><main class="main"><div class="toolbar" role="toolbar" aria-label="キャンバス操作"><div class="arch-toolbar"><button class="btn active" id="archOverviewBtn" title="機能グループで全体を見る">◫ 機能マップ</button><button class="btn" id="archRawBtn" title="すべての関数を編集する">⌘ キャンバス</button><span class="arch-nav-label" id="archNavLabel">機能マップ</span></div><button class="btn" id="inspectorToggle" aria-expanded="true" aria-controls="inspectorPanel" title="右側の設計メモを表示・非表示">◧ メモ</button><div class="toolbar-group toolbar-primary"><button class="btn primary" id="addBtn">＋ 関数</button><button class="btn" id="sourceImportBtn">⇧ ソース / ZIP</button><input id="sourceFileInput" class="file-input" type="file" multiple accept=".c,.h,.py,.zip,.tar.gz,.tgz,application/zip"/><button class="btn" id="collapseAllBtn" title="ノードの位置を変更せず全て折りたたむ">▸ 全部たたむ</button><button class="btn" id="expandAllBtn" title="ノードの位置を変更せず全て展開する">▾ 全部開く</button></div><div class="toolbar-group toolbar-zoom"><span class="help-pill" id="zoomLabel">100%</span><button class="btn small" id="zoomOut" aria-label="縮小">－</button><button class="btn small" id="zoomIn" aria-label="拡大">＋</button><button class="btn small" id="fitBtn" title="全体表示">全体</button></div><details class="compact-menu" id="toolsMenu"><summary class="btn" aria-label="その他のキャンバス操作">その他 ▾</summary><div class="compact-menu-panel"><button class="btn" id="connectBtn">↗ 接続する</button><button class="btn" id="edgeListBtn">↗ 接続一覧・削除</button><button class="btn danger" id="quickDeleteEdge" hidden>選択した矢印を削除</button><button class="btn" id="layoutBtn">▦ 自動整列（座標を変更）</button><button class="btn" id="analysisBtn">◎ 依存関係の分析</button><button class="btn" id="unresolvedBtn">? 未解決 <span id="unresolvedCount">0</span></button><button class="btn" id="mobileToolsToggle" aria-controls="mobileControls" aria-expanded="false">タッチ接続の補助欄を開く</button></div></details><div class="searchbox"><label class="sr-only" for="nodeSearch">関数を検索</label><input id="nodeSearch" autocomplete="off" placeholder="⌕ 関数を検索" /><button id="clearSearch" class="search-clear" aria-label="検索を消す">×</button><div class="search-results" id="searchResults" hidden></div></div></div><div class="mobile-controls" id="mobileControls" hidden>
 <label>編集する関数<select id="mobileNodeSelect"><option value="">関数を選択</option></select></label>
 <label>接続元<select id="mobileFrom"><option value="">接続元を選択</option></select></label>
 <label>接続先<select id="mobileTo"><option value="">接続先を選択</option></select></label>
 <label>関係<select id="mobileKind"><option value="call">関数呼び出し →</option><option value="state">状態更新・依存 ⇢</option></select></label>
 <button class="btn primary" id="mobileConnect">接続を追加</button>
-</div><div class="canvas-wrap" id="canvas"><div class="legend-strip" id="legendStrip"><span class="key-auto"></span>自動検出 <span class="key-manual"></span>手動接続 <span class="key-state"></span>状態依存 <span class="fold-legend">▸ static補助関数は親に収納</span></div><div class="canvas-hint" id="hint">ノードをドラッグして移動 ・ 選択すると右側で編集できます</div><div class="arch-board" id="archBoard" hidden></div><div class="world-shell" id="shell"><div class="world" id="world"><svg class="edges" id="edges" viewBox="0 0 2600 1900"><defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 L9 4.5 L0 9 Z" fill="#8798ac"/></marker><marker id="arrowState" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 L9 4.5 L0 9 Z" fill="#8559c5"/></marker></defs><g id="edgeLayer"></g></svg><div id="nodeLayer"></div></div></div></div></main><aside class="inspector"><div class="inspector-head"><div><h2 id="inspectorTitle">関数設計メモ</h2><p id="inspectorSubtitle">ノードを選ぶと詳細を編集できます</p></div><span style="font-size:22px;color:#a0afc2">☷</span></div><div class="inspector-body" id="inspectorBody"></div></aside></div><div class="status" id="toast" role="status"></div>
+</div><div class="canvas-wrap" id="canvas"><div class="legend-strip" id="legendStrip"><span class="key-auto"></span>自動検出 <span class="key-manual"></span>手動接続 <span class="key-state"></span>状態依存 <span class="fold-legend">▸ static補助関数は親に収納</span></div><div class="canvas-hint" id="hint">ノードをドラッグして移動 ・ 選択すると右側で編集できます</div><div class="arch-board" id="archBoard" hidden></div><div class="world-shell" id="shell"><div class="world" id="world"><svg class="edges" id="edges" viewBox="0 0 2600 1900"><defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 L9 4.5 L0 9 Z" fill="#8798ac"/></marker><marker id="arrowState" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 L9 4.5 L0 9 Z" fill="#8559c5"/></marker></defs><g id="edgeLayer"></g></svg><div id="nodeLayer"></div></div></div></div></main><aside class="inspector" id="inspectorPanel"><div class="inspector-head"><div><h2 id="inspectorTitle">関数設計メモ</h2><p id="inspectorSubtitle">ノードを選ぶと詳細を編集できます</p></div><span style="font-size:22px;color:#a0afc2">☷</span></div><div class="inspector-body" id="inspectorBody"></div></aside></div><div class="status" id="toast" role="status"></div>
 <script src="./jszip.min.js"></script>
 <script src="./parser.js"></script>
 <script src="./classifier.js"></script>
@@ -301,7 +378,8 @@ body.is-home .app{display:none!important}
 
 (()=>{'use strict';
 const FIELDS=[['name','関数名','例：parse_format'],['responsibility','責務','何を担当する関数か'],['input','入力','引数とその意味'],['changes','変更するもの','状態・メモリ・出力先など'],['unchanged','変更しないもの','維持する必要がある状態'],['dependencies','依存する関数','呼び出す関数'],['preconditions','前提条件','呼び出し元が保証すること'],['contract','契約','成功時・失敗時の振る舞い']];
-const WIDTH=266, HEIGHT=150, WORLD_W=2600, WORLD_H=1900;
+const WIDTH=266, HEIGHT=150, WORLD_W=3600, WORLD_H=2850, WORLD_PADDING=850;
+let worldExtraX=0,worldExtraY=0;
 let nodes=[],edges=[],projects=[],currentProjectId=null,selected=null,selectedEdge=null,connectFrom=null,connectMode=false,zoom=1,drag=null,dirty=false,saveQueued=false;
 let searchQuery='',homeOpen=false;
 let edgeDrag=null,stagedSource=null,sourceSnapshot=null;
@@ -495,7 +573,7 @@ function renderNodes(){
      nested.addEventListener('click',e=>{
        const toggle=e.target.closest('[data-fold-toggle]');
        const child=e.target.closest('[data-fold-child]');
-       if(toggle){e.stopPropagation();const node=nodeById(toggle.dataset.foldToggle);if(node){node.foldExpanded=!node.foldExpanded;preventFoldOverlaps();scheduleSave();renderAll();toast(node.foldExpanded?'内部関数を展開しました':'内部関数を折りたたみました')}return}
+       if(toggle){e.stopPropagation();const node=nodeById(toggle.dataset.foldToggle);if(node){node.foldExpanded=!node.foldExpanded;scheduleSave();renderAll();toast(node.foldExpanded?'内部関数を展開しました':'内部関数を折りたたみました')}return}
        if(child){e.stopPropagation();focusNode(child.dataset.foldChild)}
      });
    }
@@ -516,8 +594,8 @@ function pathFor(a,b){
 }
 function updateWorldBounds(){
  const items=foldView.roots.length?foldView.roots:nodes;
- const maxX=Math.max(WORLD_W,...items.map(n=>Math.max(0,n.x)+WIDTH+250));
- const maxY=Math.max(WORLD_H,...items.map(n=>Math.max(0,n.y)+nodeHeight(n)+250));
+ const maxX=Math.max(WORLD_W+worldExtraX,...items.map(n=>Math.max(0,n.x)+WIDTH+WORLD_PADDING));
+ const maxY=Math.max(WORLD_H+worldExtraY,...items.map(n=>Math.max(0,n.y)+nodeHeight(n)+WORLD_PADDING));
  const world=$('world');world.style.width=maxX+'px';world.style.height=maxY+'px';
  $('edges').setAttribute('viewBox',`0 0 ${maxX} ${maxY}`);
  $('edges').style.width=maxX+'px';$('edges').style.height=maxY+'px';
@@ -558,7 +636,7 @@ function renderMobile(){
  }
 }
 function renderAll(){refreshFoldView();updateWorldBounds();renderEdges();renderNodes();renderInspector();updateToolbar();renderMobile();updateDeleteEdgeButton();renderArchitecture()}
-function updateToolbar(){$('connectBtn').classList.toggle('active',connectMode);$('connectBtn').textContent=connectMode?'× 接続を中止':'↗ 接続する';$('hint').textContent=connectMode?(connectFrom?'接続先の関数をクリックしてください':'接続元の関数をクリックしてください'):'青い丸から矢印をドラッグ／矢印を選んで削除／二本指でズーム';$('zoomLabel').textContent=Math.round(zoom*100)+'%'}
+function updateToolbar(){$('connectBtn').classList.toggle('active',connectMode);$('connectBtn').textContent=connectMode?'× 接続を中止':'↗ 接続する';$('hint').textContent=connectMode?(connectFrom?'接続先の関数をクリックしてください':'接続元の関数をクリックしてください'):'背景をドラッグで移動／青い丸から接続／二本指でズーム';$('zoomLabel').textContent=Math.round(zoom*100)+'%';$('toolsMenu').querySelector('summary').textContent=connectMode?'接続中 ▾':'その他 ▾'}
 function fieldControl(key,label,ph,value){const idd='field-'+key;const multiline=['responsibility','preconditions','contract','dependencies'].includes(key);return `<div class="field"><label for="${idd}">${label}</label>${multiline?`<textarea id="${idd}" data-field="${key}" placeholder="${ph}" rows="2">${escapeHtml(value)}</textarea>`:`<input id="${idd}" data-field="${key}" placeholder="${ph}" value="${escapeHtml(value)}" />`}</div>`}
 function roleEditor(n){
  const suggestion=FCClassifier.infer(n),classification=FCClassifier.classification(n),meta=groupMeta(classification.group);
@@ -628,7 +706,7 @@ function finishTouchPointer(e){
 }
 window.addEventListener('pointerup',finishTouchPointer,true);
 window.addEventListener('pointercancel',finishTouchPointer,true);
-function pointerDown(e,nid,el){if(e.button!==0)return;if(e.pointerType==='touch'&&touchPointers.size>1)return;e.stopPropagation();if(connectMode){if(!connectFrom){connectFrom=nid;renderNodes();updateToolbar()}else if(connectFrom!==nid){if(edges.some(x=>x.from===connectFrom&&x.to===nid)){toast('この接続はすでに存在します')}else{edges.push({id:id(),from:connectFrom,to:nid,kind:'call',origin:'manual'});scheduleSave();toast('関数を接続しました')}connectMode=false;connectFrom=null;selected=nid;selectedEdge=null;renderAll()}return}const oldEdge=selectedEdge;selected=nid;selectedEdge=null;
+function pointerDown(e,nid,el){if(e.button!==0)return;if(e.pointerType==='touch'&&touchPointers.size>1)return;e.stopPropagation();if(connectMode){if(!connectFrom){connectFrom=nid;renderNodes();updateToolbar()}else if(connectFrom!==nid){if(edges.some(x=>x.from===connectFrom&&x.to===nid)){toast('この接続はすでに存在します')}else{edges.push({id:id(),from:connectFrom,to:nid,kind:'call',origin:'manual'});scheduleSave();toast('関数を接続しました')}connectMode=false;connectFrom=null;selected=nid;selectedEdge=null;renderAll()}return}const oldEdge=selectedEdge;selected=nid;selectedEdge=null;if(inspectorCollapsed)setInspectorCollapsed(false);
  document.querySelectorAll('#nodeLayer .node.selected').forEach(x=>x.classList.remove('selected'));el.classList.add('selected');
  if(oldEdge)renderEdges();renderInspector();renderMobile();updateDeleteEdgeButton();
  const n=nodeById(nid);const startX=e.clientX,startY=e.clientY,ox=n.x,oy=n.y;drag={pointerId:e.pointerId,nid,startX,startY,ox,oy,moved:false};try{$('canvas').setPointerCapture(e.pointerId)}catch(err){}}
@@ -661,8 +739,7 @@ function fit(){
  const maxX=Math.max(...visible.map(n=>n.x+WIDTH)),maxY=Math.max(...visible.map(n=>n.y+nodeHeight(n)));
  const desired=Math.min(1.05,(canvas.clientWidth-100)/(maxX-minX+80),(canvas.clientHeight-80)/(maxY-minY+80));
  zoom=Math.max(.23,Math.min(1.6,desired));$('world').style.transform=`scale(${zoom})`;
- const w=Math.max(WORLD_W,maxX+180),h=Math.max(WORLD_H,maxY+180);$('world').style.width=w+'px';$('world').style.height=h+'px';$('edges').setAttribute('viewBox',`0 0 ${w} ${h}`);$('edges').style.width=w+'px';$('edges').style.height=h+'px';
- $('shell').style.width=(w*zoom)+'px';$('shell').style.height=(h*zoom)+'px';
+ updateWorldBounds();
  canvas.scrollLeft=Math.max(0,(minX-45)*zoom);canvas.scrollTop=Math.max(0,(minY-50)*zoom);updateToolbar();
 }
 function layout(){
@@ -686,18 +763,85 @@ function layout(){
  }
  scheduleSave();renderAll();setTimeout(fit,20);toast('折りたたみを反映して自動整列しました');
 }
-$('collapseAllBtn').onclick=()=>{for(const n of nodes)n.foldExpanded=false;layout();};
-$('expandAllBtn').onclick=()=>{refreshFoldView();for(const n of nodes)if((foldView.children.get(n.id)||[]).length)n.foldExpanded=true;layout();};
-$('mobileNodeSelect').onchange=ev=>{selected=ev.target.value||null;selectedEdge=null;connectMode=false;connectFrom=null;renderAll();if(selected){const nid=expandAncestors(selected);preventFoldOverlaps();renderNodes();const n=nodeById(nid);const canvas=$('canvas');canvas.scrollLeft=Math.max(0,(n.x-30)*zoom);canvas.scrollTop=Math.max(0,(n.y-35)*zoom);if(window.matchMedia('(max-width:680px)').matches){$('inspectorBody').scrollTop=0}}};
+function setAllFolds(expanded){
+ refreshFoldView();
+ for(const n of nodes)if((foldView.children.get(n.id)||[]).length)n.foldExpanded=expanded;
+ scheduleSave();renderAll();
+ toast(expanded?'すべて展開しました（ノードの位置は維持）':'すべて折りたたみました（ノードの位置は維持）');
+}
+$('collapseAllBtn').onclick=()=>setAllFolds(false);
+$('expandAllBtn').onclick=()=>setAllFolds(true);
+$('mobileNodeSelect').onchange=ev=>{selected=ev.target.value||null;selectedEdge=null;connectMode=false;connectFrom=null;renderAll();if(selected){const nid=expandAncestors(selected);renderNodes();const n=nodeById(nid);const canvas=$('canvas');canvas.scrollLeft=Math.max(0,(n.x-30)*zoom);canvas.scrollTop=Math.max(0,(n.y-35)*zoom);if(window.matchMedia('(max-width:680px)').matches){$('inspectorBody').scrollTop=0}}};
 $('mobileConnect').onclick=()=>{const from=$('mobileFrom').value,to=$('mobileTo').value,kind=$('mobileKind').value;if(!from||!to){toast('接続元と接続先を選んでください');return}if(from===to){toast('同じ関数同士は接続できません');return}if(edges.some(e=>e.from===from&&e.to===to)){toast('すでに接続されています');return}edges.push({id:id(),from,to,kind,origin:'manual'});selected=to;selectedEdge=null;connectMode=false;connectFrom=null;scheduleSave();renderAll();toast('接続を追加しました')};
 $('addBtn').onclick=()=>{const canvas=$('canvas');const x=Math.max(25,(canvas.scrollLeft+canvas.clientWidth/2)/zoom-WIDTH/2);const y=Math.max(25,(canvas.scrollTop+canvas.clientHeight/2)/zoom-HEIGHT/2);const n={id:id(),name:'new_function()',responsibility:'',input:'',changes:'',unchanged:'',dependencies:'',preconditions:'',contract:'',type:'control',x:x+Math.random()*30,y:y+Math.random()*30};nodes.push(n);selected=n.id;selectedEdge=null;connectMode=false;connectFrom=null;scheduleSave();renderAll();$('field-name')?.focus();toast('新しい関数を作成しました')};$('connectBtn').onclick=()=>{connectMode=!connectMode;connectFrom=null;selectedEdge=null;renderAll()};$('layoutBtn').onclick=layout;$('zoomIn').onclick=()=>setZoom(zoom+.15);$('zoomOut').onclick=()=>setZoom(zoom-.15);$('fitBtn').onclick=fit;
+// Keep the editing area large on iPad; optional panels can be opened on demand.
+let inspectorCollapsed=false;
+function setInspectorCollapsed(collapsed){
+ inspectorCollapsed=collapsed;
+ $('workspace').classList.toggle('inspector-collapsed',collapsed);
+ $('inspectorToggle').setAttribute('aria-expanded',String(!collapsed));
+ $('inspectorToggle').textContent=collapsed?'◨ メモを開く':'◧ メモ';
+}
+$('inspectorToggle').onclick=()=>setInspectorCollapsed(!inspectorCollapsed);
+$('mobileToolsToggle').onclick=()=>{
+ const c=$('mobileControls'),open=c.hidden;
+ c.hidden=!open;
+ $('mobileToolsToggle').setAttribute('aria-expanded',String(open));
+ $('mobileToolsToggle').textContent=open?'タッチ接続の補助欄を閉じる':'タッチ接続の補助欄を開く';
+ $('toolsMenu').open=false;
+};
+// Menus close after a command is selected; native details remains keyboard-accessible.
+for(const menu of ['projectMenu','toolsMenu']){
+ $(menu).querySelector('.compact-menu-panel').addEventListener('click',e=>{
+  if(e.target.closest('button'))$(menu).open=false;
+ });
+}
 $('projectSelect').onchange=e=>switchProject(e.target.value);
 $('newProjectBtn').onclick=()=>{const name=prompt('新しいプロジェクト名を入力してください','');if(name===null)return;const trimmed=name.trim();if(!trimmed){toast('名前を入力してください');return}persist();const p=newProject(trimmed);projects.push(p);switchProject(p.id);toast('新しいプロジェクトを作成しました')};
 $('renameProjectBtn').onclick=()=>{const p=projects.find(p=>p.id===currentProjectId);const name=prompt('プロジェクト名を変更',p.name);if(name===null)return;const trimmed=name.trim();if(!trimmed){toast('名前を入力してください');return}p.name=trimmed;persist();renderProjectSelect();renderArchitecture();renderProjectHome();toast('名前を変更しました')};
 $('deleteProjectBtn').onclick=()=>{if(projects.length<=1){alert('最後のプロジェクトは削除できません');return}const p=projects.find(p=>p.id===currentProjectId);if(!confirm('「'+p.name+'」を削除しますか？ このプロジェクトのノードと接続も削除されます。事前にJSON保存してください。'))return;projects=projects.filter(x=>x.id!==currentProjectId);const next=projects[0];currentProjectId=next.id;nodes=next.nodes;edges=next.edges;archMode=next.archMode||'overview';archGroup=next.archGroup||'sort';archFocusId=null;$('languageSelect').value=ensureProject(next).language;selected=null;selectedEdge=null;connectMode=false;connectFrom=null;persist();renderProjectSelect();renderAll();updateUnresolvedCount();setTimeout(fit,30);toast('プロジェクトを削除しました')};
 $('exportBtn').onclick=()=>{const data=JSON.stringify({format:'function-canvas',version:5,nodes,edges,language:currentProject()?.language||'c',sources:currentProject()?.sources||[],archMode,archGroup},null,2);const blob=new Blob([data],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=(projects.find(p=>p.id===currentProjectId)?.name||'function-canvas').replace(/[^a-zA-Z0-9_-]/g,'_')+'.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('JSONを保存しました')};$('importBtn').onclick=()=>$('importFile').click();$('importFile').onchange=async ev=>{const file=ev.target.files?.[0];if(!file)return;try{const obj=JSON.parse(await file.text());if(!Array.isArray(obj.nodes)||!Array.isArray(obj.edges)||obj.nodes.length>400)throw new Error('JSONの形式が正しくありません');const ids=new Set();for(const n of obj.nodes){if(!n||typeof n.id!=='string'||typeof n.name!=='string'||typeof n.x!=='number'||typeof n.y!=='number'||ids.has(n.id)||!Number.isFinite(n.x)||!Number.isFinite(n.y))throw new Error('ノードの形式が不正です');ids.add(n.id);n.x=Math.max(0,n.x);n.y=Math.max(0,n.y);n.type=['control','output','state'].includes(n.type)?n.type:'control'}nodes=obj.nodes;edges=obj.edges.filter(e=>e&&ids.has(e.from)&&ids.has(e.to)&&e.from!==e.to).map(e=>({...e,id:typeof e.id==='string'?e.id:id(),from:e.from,to:e.to,kind:e.kind==='state'?'state':'call'}));const p=currentProject();if(p){p.sources=Array.isArray(obj.sources)?obj.sources:[];p.language=obj.language==='py'?'py':'c';archMode=obj.archMode||'overview';archGroup=obj.archGroup||'sort';p.archMode=archMode;p.archGroup=archGroup;const l=$('languageSelect');if(l)l.value=p.language;}selected=null;selectedEdge=null;connectMode=false;connectFrom=null;if(p)migrateStaticMetadata(p);persist();renderAll();updateUnresolvedCount();setTimeout(fit,30);toast('JSONを読み込みました')}catch(err){alert('読み込めませんでした：'+err.message)}ev.target.value=''};$('resetBtn').onclick=()=>{if(!confirm('現在のプロジェクトのマップをft_printfのサンプルに戻しますか？'))return;const s=sample();nodes=s.nodes;edges=s.edges;const p=currentProject();if(p){p.sources=[];p.staticMetadataVersion=2;}selected=null;selectedEdge=null;connectMode=false;connectFrom=null;persist();renderAll();updateUnresolvedCount();setTimeout(fit,30)};
 /* Clear selection only for a real pointerdown on empty canvas. Pointer capture can retarget a later click to #canvas even when it began on a node. */
-$('canvas').addEventListener('pointerdown',e=>{if(e.button!==0)return;if(e.target===$('canvas')||e.target===$('world')||e.target===$('shell')||e.target===$('nodeLayer')||e.target===$('edges')){if(selected!==null||selectedEdge!==null){selected=null;selectedEdge=null;renderAll()}}});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&connectMode){connectMode=false;connectFrom=null;renderAll()}if((e.key==='Delete'||e.key==='Backspace')&&selectedEdge&&!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)){edges=edges.filter(x=>x.id!==selectedEdge);selectedEdge=null;scheduleSave();renderAll()}});
+// Dragging the blank canvas with the primary mouse button pans the viewport.
+// Nodes / edge grips retain their own pointer controls; touch keeps the existing pinch/pan implementation.
+let backgroundPan=null;
+function isCanvasBackground(target){
+ return target===$('canvas')||target===$('world')||target===$('shell')||target===$('nodeLayer')||target===$('edges');
+}
+function extendPanWorld(targetLeft,targetTop){
+ const c=$('canvas');
+ const w=parseFloat($('world').style.width)||WORLD_W,h=parseFloat($('world').style.height)||WORLD_H;
+ let changed=false;
+ if(targetLeft+c.clientWidth>=w*zoom-100){worldExtraX=Math.max(worldExtraX,w-WORLD_W+900);changed=true}
+ if(targetTop+c.clientHeight>=h*zoom-100){worldExtraY=Math.max(worldExtraY,h-WORLD_H+750);changed=true}
+ if(changed)updateWorldBounds();
+}
+$('canvas').addEventListener('pointerdown',e=>{
+ if(e.button!==0||!isCanvasBackground(e.target))return;
+ if(e.pointerType==='mouse'&&archMode==='raw'){
+  backgroundPan={pointerId:e.pointerId,startX:e.clientX,startY:e.clientY,left:$('canvas').scrollLeft,top:$('canvas').scrollTop,moved:false};
+  $('canvas').classList.add('is-panning');
+  try{$('canvas').setPointerCapture(e.pointerId)}catch(err){}
+  e.preventDefault();
+ }
+ if(selected!==null||selectedEdge!==null){selected=null;selectedEdge=null;renderAll()}
+});
+window.addEventListener('pointermove',e=>{
+ if(!backgroundPan||backgroundPan.pointerId!==e.pointerId)return;
+ const dx=e.clientX-backgroundPan.startX,dy=e.clientY-backgroundPan.startY;
+ if(Math.hypot(dx,dy)>=3)backgroundPan.moved=true;
+ if(!backgroundPan.moved)return;
+ const left=Math.max(0,backgroundPan.left-dx),top=Math.max(0,backgroundPan.top-dy);
+ extendPanWorld(left,top);$('canvas').scrollLeft=left;$('canvas').scrollTop=top;
+});
+function finishBackgroundPan(e){
+ if(!backgroundPan||backgroundPan.pointerId!==e.pointerId)return;
+ backgroundPan=null;$('canvas').classList.remove('is-panning');
+}
+window.addEventListener('pointerup',finishBackgroundPan);
+window.addEventListener('pointercancel',finishBackgroundPan);
+$('canvas').addEventListener('lostpointercapture',finishBackgroundPan);
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&connectMode){connectMode=false;connectFrom=null;renderAll()}if((e.key==='Delete'||e.key==='Backspace')&&selectedEdge&&!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)){edges=edges.filter(x=>x.id!==selectedEdge);selectedEdge=null;scheduleSave();renderAll()}});
 
 /* -------- v3: project overview -------- */
 function showHome(){
@@ -748,7 +892,7 @@ function renderSearchResults(){
 }
 function focusNode(nid){
   const n=nodeById(nid);if(!n)return;archMode='raw';const p=currentProject();if(p)p.archMode='raw';
-  const visibleId=expandAncestors(nid);preventFoldOverlaps();const visible=nodeById(visibleId)||n;
+  const visibleId=expandAncestors(nid);const visible=nodeById(visibleId)||n;
   hideHome();$('analysisOverlay').hidden=true;
   searchQuery='';$('nodeSearch').value='';renderSearchResults();
   selected=nid;selectedEdge=null;connectMode=false;connectFrom=null;renderAll();

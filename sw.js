@@ -1,4 +1,4 @@
-const CACHE_NAME = 'function-canvas-shell-v51-tryclean-20261111';
+const CACHE_NAME = 'function-canvas-shell-v52-20261111';
 const ASSETS = [
   './','./index.html','./parser.js','./classifier.js','./jszip.min.js',
   './manifest.webmanifest','./icon-192.png','./icon-512.png','./apple-touch-icon.png'
